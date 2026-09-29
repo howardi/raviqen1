@@ -1,0 +1,32 @@
+{
+  "name": "OversightDepartment",
+  "type": "object",
+  "properties": {
+    "tenant_id": { "type": "string" },
+    "slug": { "type": "string" },
+    "name": { "type": "string" },
+    "nav_label": { "type": "string" },
+    "sort_order": { "type": "number", "default": 100 },
+    "active": { "type": "boolean", "default": true },
+    "cutoff_time": { "type": "string", "default": "18:00" },
+    "form_schema": { "type": "object" },
+    "purchases_enabled": { "type": "boolean", "default": false }
+  },
+  "required": ["tenant_id", "slug", "name", "nav_label"],
+  "rls": {
+    "read": { "data.tenant_id": "{{user.data.tenant_id}}" },
+    "create": {
+      "$or": [
+        { "user_condition": { "role": "admin" } },
+        { "user_condition": { "raviqen_role": "executive" } }
+      ]
+    },
+    "update": {
+      "$or": [
+        { "user_condition": { "role": "admin" } },
+        { "user_condition": { "raviqen_role": "executive" } }
+      ]
+    },
+    "delete": { "user_condition": { "role": "oversight_immutable" } }
+  }
+}

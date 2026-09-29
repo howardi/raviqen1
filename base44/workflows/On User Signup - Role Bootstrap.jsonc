@@ -1,0 +1,41 @@
+{
+  "name": "On User Signup - Role Bootstrap",
+  "description": "Auto-elevates designated admin emails (support@raviqen.com) to Super Admin; all other signups default to Pending",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "app_user_auth",
+      "events": [
+        "signup"
+      ]
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "on_signup_role_bootstrap",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "bootstrap_role": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "bootstrapUserRole",
+            "args": {
+              "user_id": "${ .trigger.user_id }",
+              "email": "${ .trigger.email }",
+              "auth_method": "${ .trigger.auth_method }"
+            }
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Bootstrap user role",
+            "description": "Elevate admin emails to Super Admin, else Pending"
+          }
+        }
+      }
+    ]
+  }
+}

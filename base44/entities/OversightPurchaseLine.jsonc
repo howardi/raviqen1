@@ -1,0 +1,32 @@
+{
+  "name": "OversightPurchaseLine",
+  "type": "object",
+  "properties": {
+    "tenant_id": { "type": "string" },
+    "report_id": { "type": "string" },
+    "department": { "type": "string" },
+    "item": { "type": "string" },
+    "quantity": { "type": "number" },
+    "unit_price": { "type": "number" },
+    "supplier": { "type": "string" },
+    "receipt_url": { "type": "string" },
+    "line_date": { "type": "string", "format": "date" }
+  },
+  "required": ["tenant_id", "report_id", "item"],
+  "rls": {
+    "read": {
+      "$and": [
+        { "data.tenant_id": "{{user.data.tenant_id}}" },
+        {
+          "$or": [
+            { "user_condition": { "role": "admin" } },
+            { "user_condition": { "raviqen_role": "executive" } }
+          ]
+        }
+      ]
+    },
+    "create": { "user_condition": { "role": "oversight_immutable" } },
+    "update": { "user_condition": { "role": "oversight_immutable" } },
+    "delete": { "user_condition": { "role": "oversight_immutable" } }
+  }
+}

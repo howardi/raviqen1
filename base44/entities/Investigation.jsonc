@@ -1,0 +1,202 @@
+{
+  "name": "Investigation",
+  "type": "object",
+  "properties": {
+    "tenant_id": {
+      "type": "string",
+      "title": "Tenant (Organization) ID",
+      "description": "Multi-tenant isolation key \u2014 the organization this record belongs to. Enforced via RLS (data.tenant_id === user.data.tenant_id)."
+    },
+    "alert_id": {
+      "type": "string",
+      "title": "Alert ID"
+    },
+    "transaction_id": {
+      "type": "string",
+      "title": "Transaction ID"
+    },
+    "title": {
+      "type": "string",
+      "title": "Investigation Title"
+    },
+    "vendor": {
+      "type": "string",
+      "title": "Vendor"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "open",
+        "in_progress",
+        "concluded"
+      ],
+      "default": "open",
+      "title": "Status"
+    },
+    "outcome": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "confirmed_anomaly",
+        "false_positive",
+        "process_error",
+        "escalated"
+      ],
+      "default": "pending",
+      "title": "Outcome"
+    },
+    "ai_explanation": {
+      "type": "string",
+      "title": "AI Grounded Explanation"
+    },
+    "ai_confidence": {
+      "type": "string",
+      "enum": [
+        "low",
+        "medium",
+        "high"
+      ],
+      "default": "medium",
+      "title": "AI Confidence"
+    },
+    "cited_signals": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "title": "Cited Evidence Signals"
+    },
+    "evidence_summary": {
+      "type": "string",
+      "title": "Evidence Summary"
+    },
+    "notes": {
+      "type": "string",
+      "title": "Investigator Notes"
+    },
+    "investigator": {
+      "type": "string",
+      "title": "Investigator"
+    },
+    "risk_level": {
+      "type": "string",
+      "enum": [
+        "low",
+        "medium",
+        "high",
+        "critical"
+      ],
+      "default": "high",
+      "title": "Risk Level"
+    },
+    "wizard_step": {
+      "type": "number",
+      "title": "Current Wizard Step",
+      "default": 1
+    },
+    "recommended_actions": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "title": "AI Recommended Actions"
+    },
+    "similar_cases": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "title": "Similar Cases Detected"
+    },
+    "qa_history": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "title": "Q&A History"
+    },
+    "cross_ref_results": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "title": "Cross-Reference Results"
+    },
+    "compliance_analysis": {
+      "type": "object",
+      "title": "Compliance Impact Analysis"
+    },
+    "financial_impact": {
+      "type": "object",
+      "title": "Financial Impact Estimation"
+    },
+    "report_narrative": {
+      "type": "object",
+      "title": "Report Narrative (Executive Summary + Conclusion)"
+    },
+    "report_url": {
+      "type": "string",
+      "title": "Generated Report URL"
+    },
+    "follow_up_date": {
+      "type": "string",
+      "format": "date",
+      "title": "Follow-up Date"
+    }
+  },
+  "required": [
+    "title",
+    "transaction_id",
+    "status"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "data.tenant_id": "{{user.data.tenant_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "data.tenant_id": "{{user.data.tenant_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "data.tenant_id": "{{user.data.tenant_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "data.tenant_id": "{{user.data.tenant_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

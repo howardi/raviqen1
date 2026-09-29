@@ -1,0 +1,74 @@
+{
+  "name": "RiskRule",
+  "type": "object",
+  "properties": {
+    "tenant_id": {
+      "type": "string",
+      "title": "Tenant (Organization) ID",
+      "description": "Multi-tenant isolation key \u2014 the organization this record belongs to."
+    },
+    "name": {
+      "type": "string",
+      "title": "Rule Name"
+    },
+    "enabled": {
+      "type": "boolean",
+      "default": true,
+      "title": "Enabled"
+    },
+    "conditions": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "title": "Conditions (IF)"
+    },
+    "action": {
+      "type": "string",
+      "title": "Action (THEN)"
+    },
+    "priority": {
+      "type": "string",
+      "enum": [
+        "low",
+        "medium",
+        "high",
+        "critical"
+      ],
+      "default": "medium",
+      "title": "Priority"
+    },
+    "triggered_count": {
+      "type": "number",
+      "default": 0,
+      "title": "Times Triggered"
+    }
+  },
+  "required": [
+    "name",
+    "conditions",
+    "action"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

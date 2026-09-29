@@ -1,0 +1,91 @@
+{
+  "name": "AINarrativeLog",
+  "type": "object",
+  "properties": {
+    "tenant_id": {
+      "type": "string",
+      "title": "Tenant (Organization) ID",
+      "description": "Multi-tenant isolation key \u2014 the organization this log belongs to."
+    },
+    "statement_text": {
+      "type": "string",
+      "title": "AI-Generated Statement",
+      "description": "The exact narrative text emitted by the AI (briefing, badge, summary)."
+    },
+    "context_snapshot": {
+      "type": "object",
+      "title": "Context Snapshot",
+      "description": "The fixed, immutable verified data the AI was given and allowed to restate. The AI is read-only over this \u2014 it may not invent numbers."
+    },
+    "source_metric_values": {
+      "type": "object",
+      "title": "Source Metric Values",
+      "description": "The canonical metric values (from aggregationService) passed in as immutable context, so any hallucinated claim can be traced."
+    },
+    "generated_by": {
+      "type": "string",
+      "title": "Generator (module / feature)"
+    },
+    "model": {
+      "type": "string",
+      "title": "Model"
+    },
+    "linked_entity": {
+      "type": "string",
+      "title": "Linked Entity Type"
+    },
+    "linked_id": {
+      "type": "string",
+      "title": "Linked Record ID"
+    },
+    "integrity_check": {
+      "type": "object",
+      "title": "Integrity Check",
+      "description": "Result of verifying the statement only restates passed-in numbers and asserts no unverified status.",
+      "properties": {
+        "passed": {
+          "type": "boolean"
+        },
+        "violations": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "required": [
+    "statement_text",
+    "generated_by"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "$or": [
+        {
+          "data.tenant_id": "{{user.data.tenant_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

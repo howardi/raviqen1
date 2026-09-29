@@ -1,0 +1,249 @@
+{
+  "name": "Organization",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "title": "Organization Name"
+    },
+    "description": {
+      "type": "string",
+      "title": "Description"
+    },
+    "owner_id": {
+      "type": "string",
+      "title": "Owner User ID"
+    },
+    "owner_email": {
+      "type": "string",
+      "title": "Owner Email"
+    },
+    "industry": {
+      "type": "string",
+      "title": "Industry"
+    },
+    "country": {
+      "type": "string",
+      "title": "Country"
+    },
+    "contact_email": {
+      "type": "string",
+      "title": "Contact Email"
+    },
+    "subscription_plan": {
+      "type": "string",
+      "enum": [
+        "starter",
+        "growth",
+        "professional",
+        "enterprise"
+      ],
+      "default": "starter",
+      "title": "Subscription Plan",
+      "description": "Active billing tier. New organizations start on the paid Starter plan; Enterprise is unlimited."
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "suspended",
+        "deleted"
+      ],
+      "default": "active",
+      "title": "Status"
+    },
+    "max_users": {
+      "type": "number",
+      "default": 5,
+      "title": "Max Users (seat cap)"
+    },
+    "max_locations": {
+      "type": "number",
+      "default": 1,
+      "title": "Max Locations"
+    },
+    "max_transactions_per_month": {
+      "type": "number",
+      "default": 5000,
+      "title": "Max Transactions / Month"
+    },
+    "feature_flags": {
+      "type": "object",
+      "title": "Module Feature Flags",
+      "description": "Per-module enable/disable toggles \u2014 gated by the subscription plan and overridable per organization.",
+      "properties": {
+        "data_ingestion": {
+          "type": "boolean",
+          "default": true
+        },
+        "investigations": {
+          "type": "boolean",
+          "default": true
+        },
+        "alerts": {
+          "type": "boolean",
+          "default": true
+        },
+        "case_management": {
+          "type": "boolean",
+          "default": true
+        },
+        "sanctions_screening": {
+          "type": "boolean",
+          "default": true
+        },
+        "network_explorer": {
+          "type": "boolean",
+          "default": true
+        },
+        "ingestion_screening": {
+          "type": "boolean",
+          "default": true
+        },
+        "entity_intelligence": {
+          "type": "boolean",
+          "default": true
+        },
+        "autonomous_engine": {
+          "type": "boolean",
+          "default": true
+        },
+        "analytics": {
+          "type": "boolean",
+          "default": true
+        },
+        "collusion_detector": {
+          "type": "boolean",
+          "default": true
+        },
+        "what_if_sandbox": {
+          "type": "boolean",
+          "default": true
+        },
+        "insider_threat": {
+          "type": "boolean",
+          "default": true
+        },
+        "crypto_audit": {
+          "type": "boolean",
+          "default": true
+        },
+        "osint_scanner": {
+          "type": "boolean",
+          "default": true
+        },
+        "vendor_verification": {
+          "type": "boolean",
+          "default": true
+        },
+        "fx_stress_test": {
+          "type": "boolean",
+          "default": true
+        },
+        "regulatory_horizon": {
+          "type": "boolean",
+          "default": true
+        },
+        "reports_exports": {
+          "type": "boolean",
+          "default": true
+        },
+        "risk_rules": {
+          "type": "boolean",
+          "default": true
+        },
+        "daily_reports": {
+          "type": "boolean",
+          "default": true
+        },
+        "hr_dashboard": {
+          "type": "boolean",
+          "default": true
+        },
+        "activity_stream": {
+          "type": "boolean",
+          "default": true
+        },
+        "relief_calendar": {
+          "type": "boolean",
+          "default": true
+        },
+        "resource_calculator": {
+          "type": "boolean",
+          "default": true
+        },
+        "integrations": {
+          "type": "boolean",
+          "default": true
+        },
+        "audit_log": {
+          "type": "boolean",
+          "default": true
+        },
+        "ai_chatbox": {
+          "type": "boolean",
+          "default": true
+        },
+        "support": {
+          "type": "boolean",
+          "default": true
+        },
+        "settings": {
+          "type": "boolean",
+          "default": true
+        },
+        "raviqen_oversight": {
+          "type": "boolean",
+          "default": true
+        },
+        "staff_ai_chatbox": {
+          "type": "boolean",
+          "default": false
+        }
+      },
+      "default": {}
+    }
+  },
+  "required": [
+    "name",
+    "owner_id",
+    "status"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "data.owner_id": "{{user.id}}"
+        }
+      ]
+    },
+    "create": {
+      "user_condition": {
+        "role": "super_admin"
+      }
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "data.owner_id": "{{user.id}}"
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "data.owner_id": "{{user.id}}"
+        }
+      ]
+    }
+  }
+}

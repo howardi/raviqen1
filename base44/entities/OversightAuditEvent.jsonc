@@ -1,0 +1,27 @@
+{
+  "name": "OversightAuditEvent",
+  "type": "object",
+  "properties": {
+    "tenant_id": { "type": "string" },
+    "actor_id": { "type": "string" },
+    "actor_email": { "type": "string" },
+    "action": { "type": "string" },
+    "entity_type": { "type": "string" },
+    "entity_id": { "type": "string" },
+    "ip_address": { "type": "string" },
+    "before_json": { "type": "string" },
+    "after_json": { "type": "string" }
+  },
+  "required": ["action"],
+  "rls": {
+    "read": {
+      "$or": [
+        { "user_condition": { "role": "admin" } },
+        { "user_condition": { "raviqen_role": "executive" } }
+      ]
+    },
+    "create": { "user_condition": { "role": "oversight_immutable" } },
+    "update": { "user_condition": { "role": "oversight_immutable" } },
+    "delete": { "user_condition": { "role": "oversight_immutable" } }
+  }
+}

@@ -1,0 +1,125 @@
+{
+  "name": "RegulatoryUpdate",
+  "type": "object",
+  "properties": {
+    "tenant_id": {
+      "type": "string",
+      "title": "Tenant (Organization) ID",
+      "description": "Multi-tenant isolation key \u2014 the organization this record belongs to. Enforced via RLS (data.tenant_id === user.data.tenant_id)."
+    },
+    "title": {
+      "type": "string",
+      "title": "Update Title"
+    },
+    "jurisdiction": {
+      "type": "string",
+      "title": "Jurisdiction"
+    },
+    "regulator": {
+      "type": "string",
+      "title": "Regulator / Authority"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "aml",
+        "sanctions",
+        "data_protection",
+        "financial_reporting",
+        "consumer_protection",
+        "tax",
+        "other"
+      ],
+      "default": "aml",
+      "title": "Regulatory Category"
+    },
+    "effective_date": {
+      "type": "string",
+      "format": "date",
+      "title": "Effective Date"
+    },
+    "impact_level": {
+      "type": "string",
+      "enum": [
+        "low",
+        "medium",
+        "high",
+        "critical"
+      ],
+      "default": "medium",
+      "title": "Business Impact Level"
+    },
+    "summary": {
+      "type": "string",
+      "title": "Summary"
+    },
+    "affected_areas": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "title": "Affected Business Areas"
+    },
+    "required_actions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "title": "Required Compliance Actions"
+    },
+    "ai_analysis": {
+      "type": "string",
+      "title": "AI Impact Analysis"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "new",
+        "assessing",
+        "action_required",
+        "compliant",
+        "archived"
+      ],
+      "default": "new",
+      "title": "Assessment Status"
+    },
+    "source_url": {
+      "type": "string",
+      "title": "Source URL"
+    }
+  },
+  "required": [
+    "title",
+    "jurisdiction",
+    "status"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.tenant_id": "{{user.data.tenant_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

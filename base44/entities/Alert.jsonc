@@ -1,0 +1,155 @@
+{
+  "name": "Alert",
+  "type": "object",
+  "properties": {
+    "tenant_id": {
+      "type": "string",
+      "title": "Tenant (Organization) ID",
+      "description": "Multi-tenant isolation key \u2014 the organization this record belongs to. Enforced via RLS (data.tenant_id === user.data.tenant_id)."
+    },
+    "title": {
+      "type": "string",
+      "title": "Alert Title"
+    },
+    "transaction_id": {
+      "type": "string",
+      "title": "Transaction ID"
+    },
+    "vendor": {
+      "type": "string",
+      "title": "Vendor"
+    },
+    "amount": {
+      "type": "number",
+      "title": "Amount"
+    },
+    "currency": {
+      "type": "string",
+      "title": "Currency",
+      "description": "Native ISO currency code of the flagged transaction (e.g. NGN, USD, GBP). Used by the AI risk briefing to render the correct localized symbol.",
+      "default": "USD"
+    },
+    "risk_level": {
+      "type": "string",
+      "enum": [
+        "low",
+        "medium",
+        "high",
+        "critical"
+      ],
+      "default": "high",
+      "title": "Risk Level"
+    },
+    "risk_score": {
+      "type": "number",
+      "title": "Risk Score",
+      "default": 0
+    },
+    "description": {
+      "type": "string",
+      "title": "Description"
+    },
+    "flag_reasons": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "title": "Flag Reasons"
+    },
+    "flag_evidence": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "flag": {
+            "type": "string",
+            "title": "Flag Name"
+          },
+          "rule_id": {
+            "type": "string",
+            "title": "Rule ID"
+          },
+          "evidence_field": {
+            "type": "string",
+            "title": "Source Field"
+          },
+          "evidence_value": {
+            "type": "string",
+            "title": "Source Value"
+          },
+          "detail": {
+            "type": "string",
+            "title": "Detail"
+          }
+        },
+        "required": [
+          "flag"
+        ],
+        "title": "Flag Evidence"
+      },
+      "title": "Flag Evidence Trail",
+      "description": "Each flag mapped to the exact source field/value that triggered it. A flag may not be displayed without a corresponding evidence entry."
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "open",
+        "investigating",
+        "resolved",
+        "dismissed",
+        "closed_false_positive"
+      ],
+      "default": "open",
+      "title": "Status"
+    },
+    "assigned_to": {
+      "type": "string",
+      "title": "Assigned To"
+    },
+    "category": {
+      "type": "string",
+      "title": "Category"
+    }
+  },
+  "required": [
+    "title",
+    "transaction_id",
+    "risk_level"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.tenant_id": "{{user.data.tenant_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "$or": [
+        {
+          "data.tenant_id": "{{user.data.tenant_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

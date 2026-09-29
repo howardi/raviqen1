@@ -1,0 +1,125 @@
+{
+  "name": "FraudAlert",
+  "type": "object",
+  "properties": {
+    "tenant_id": {
+      "type": "string",
+      "title": "Tenant (Organization) ID",
+      "description": "Multi-tenant isolation key \u2014 the organization this record belongs to. Enforced via RLS (data.tenant_id === user.data.tenant_id)."
+    },
+    "event_id": {
+      "type": "string",
+      "title": "Event ID"
+    },
+    "department": {
+      "type": "string",
+      "enum": [
+        "Front_Desk",
+        "Restaurant_POS",
+        "Corporate_HR"
+      ],
+      "title": "Department"
+    },
+    "employee_id": {
+      "type": "string",
+      "title": "Employee / Agent / Server ID"
+    },
+    "fraud_vector_analysis": {
+      "type": "object",
+      "title": "Fraud Vector Analysis",
+      "properties": {
+        "detected_anomaly": {
+          "type": "string"
+        },
+        "calculated_metric": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "flagged_rule": {
+          "type": "string"
+        }
+      }
+    },
+    "overall_risk_level": {
+      "type": "string",
+      "enum": [
+        "LOW",
+        "LOW-MEDIUM",
+        "MEDIUM",
+        "HIGH",
+        "CRITICAL"
+      ],
+      "title": "Overall Risk Level"
+    },
+    "recommended_action": {
+      "type": "string",
+      "title": "Recommended Action"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "open",
+        "investigating",
+        "resolved",
+        "dismissed"
+      ],
+      "default": "open",
+      "title": "Resolution Status"
+    },
+    "source_file": {
+      "type": "string",
+      "title": "Source File"
+    }
+  },
+  "required": [
+    "event_id",
+    "department",
+    "overall_risk_level",
+    "status"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.tenant_id": "{{user.data.tenant_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "data.tenant_id": "{{user.data.tenant_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "data.tenant_id": "{{user.data.tenant_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

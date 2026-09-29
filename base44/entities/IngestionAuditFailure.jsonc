@@ -1,0 +1,94 @@
+{
+  "name": "IngestionAuditFailure",
+  "type": "object",
+  "properties": {
+    "tenant_id": {
+      "type": "string",
+      "title": "Tenant (Organization) ID"
+    },
+    "document_id": {
+      "type": "string",
+      "title": "Unique Audit Document ID"
+    },
+    "source_reference": {
+      "type": "string",
+      "title": "Extracted Source Reference"
+    },
+    "entity_name": {
+      "type": "string",
+      "title": "Extracted Vendor / Entity"
+    },
+    "sector": {
+      "type": "string",
+      "title": "Extracted Sector"
+    },
+    "validated_amount": {
+      "type": "number",
+      "title": "Extracted Amount (if valid)"
+    },
+    "currency_iso": {
+      "type": "string",
+      "title": "Currency ISO"
+    },
+    "risk_score": {
+      "type": "number",
+      "title": "Risk Score (only if scored)"
+    },
+    "risk_level": {
+      "type": "string",
+      "title": "Risk Level (only if scored)"
+    },
+    "verdict_summary": {
+      "type": "string",
+      "title": "Processing Failure / Required Review"
+    },
+    "audit_status": {
+      "type": "string",
+      "enum": [
+        "PENDING_REVIEW",
+        "CLOSED_FALSE_POSITIVE",
+        "APPROVED_CLEARED"
+      ],
+      "default": "PENDING_REVIEW"
+    },
+    "batch_id": {
+      "type": "string"
+    },
+    "source_filename": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "document_id",
+    "verdict_summary"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.tenant_id": "{{user.data.tenant_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

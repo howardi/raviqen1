@@ -1,0 +1,86 @@
+{
+  "name": "BackupRecord",
+  "type": "object",
+  "properties": {
+    "tenant_id": {
+      "type": "string",
+      "title": "Tenant (Organization) ID",
+      "description": "Multi-tenant isolation key \u2014 the organization this record belongs to."
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Backup Timestamp"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "manual",
+        "scheduled"
+      ],
+      "default": "manual",
+      "title": "Backup Type"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "in_progress",
+        "completed",
+        "failed"
+      ],
+      "default": "in_progress",
+      "title": "Status"
+    },
+    "size": {
+      "type": "number",
+      "title": "Size (bytes)"
+    },
+    "triggered_by": {
+      "type": "string",
+      "title": "Triggered By"
+    },
+    "modules": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "title": "Modules Included"
+    },
+    "file_url": {
+      "type": "string",
+      "title": "Backup File URI"
+    },
+    "record_count": {
+      "type": "number",
+      "title": "Total Records",
+      "default": 0
+    }
+  },
+  "required": [
+    "timestamp",
+    "type",
+    "status"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

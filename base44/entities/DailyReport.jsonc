@@ -1,0 +1,234 @@
+{
+  "name": "DailyReport",
+  "type": "object",
+  "properties": {
+    "tenant_id": {
+      "type": "string",
+      "title": "Tenant (Organization) ID",
+      "description": "Multi-tenant isolation key \u2014 the organization this record belongs to. Enforced via RLS (data.tenant_id === user.data.tenant_id)."
+    },
+    "report_id": {
+      "type": "string",
+      "title": "Report ID"
+    },
+    "department": {
+      "type": "string",
+      "default": "general",
+      "title": "Department"
+    },
+    "ingestion_status": {
+      "type": "string",
+      "enum": ["submitted", "reviewed", "ingested", "rejected"],
+      "default": "submitted",
+      "title": "Ingestion Status"
+    },
+    "rejection_reason": {
+      "type": "string",
+      "title": "Rejection Reason"
+    },
+    "corrects_report_id": {
+      "type": "string",
+      "title": "Corrects Report ID"
+    },
+    "locked": {
+      "type": "boolean",
+      "default": true,
+      "title": "Locked"
+    },
+    "file_urls": {
+      "type": "array",
+      "items": { "type": "string" },
+      "title": "Attachment URLs"
+    },
+    "title": {
+      "type": "string",
+      "title": "Report Title"
+    },
+    "content": {
+      "type": "string",
+      "title": "Report Content"
+    },
+    "report_date": {
+      "type": "string",
+      "format": "date",
+      "title": "Report Date (Coverage Period)"
+    },
+    "submitted_by": {
+      "type": "string",
+      "title": "Submitted By"
+    },
+    "submitted_by_id": {
+      "type": "string",
+      "title": "Submitter User ID"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "submitted",
+        "read",
+        "commented",
+        "flagged",
+        "archived"
+      ],
+      "default": "submitted",
+      "title": "Review Status"
+    },
+    "priority": {
+      "type": "string",
+      "enum": [
+        "normal",
+        "urgent"
+      ],
+      "default": "normal",
+      "title": "Priority"
+    },
+    "file_url": {
+      "type": "string",
+      "title": "Attachment URL"
+    },
+    "comments": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "title": "Reviewer Comments"
+    },
+    "read_by": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "title": "Read By (User IDs)"
+    },
+    "flagged_reason": {
+      "type": "string",
+      "title": "Flag Reason"
+    },
+    "metrics": {
+      "type": "object",
+      "title": "Structured Metrics (revenue, covers, incidents, etc.)"
+    },
+    "fraud_analysis": {
+      "type": "object",
+      "title": "Manager-only fraud analysis",
+      "description": "Computed on submit. Never returned to the department user."
+    }
+  },
+  "required": [
+    "report_id",
+    "department",
+    "title",
+    "content",
+    "report_date",
+    "status"
+  ],
+  "rls": {
+    "read": {
+      "$and": [
+        {
+          "data.tenant_id": "{{user.data.tenant_id}}"
+        },
+        {
+          "$or": [
+            {
+              "data.submitted_by_id": "{{user.id}}"
+            },
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "raviqen_role": "manager"
+              }
+            },
+            {
+              "user_condition": {
+                "raviqen_role": "executive"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "create": {
+      "$and": [
+        {
+          "data.tenant_id": "{{user.data.tenant_id}}"
+        },
+        {
+          "$or": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "raviqen_role": "manager"
+              }
+            },
+            {
+              "user_condition": {
+                "raviqen_role": "executive"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "update": {
+      "$and": [
+        {
+          "data.tenant_id": "{{user.data.tenant_id}}"
+        },
+        {
+          "$or": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "raviqen_role": "manager"
+              }
+            },
+            {
+              "user_condition": {
+                "raviqen_role": "executive"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "delete": {
+      "$and": [
+        {
+          "data.tenant_id": "{{user.data.tenant_id}}"
+        },
+        {
+          "$or": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "raviqen_role": "manager"
+              }
+            },
+            {
+              "user_condition": {
+                "raviqen_role": "executive"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

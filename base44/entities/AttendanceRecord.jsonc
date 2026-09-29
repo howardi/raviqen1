@@ -1,0 +1,140 @@
+{
+  "name": "AttendanceRecord",
+  "type": "object",
+  "properties": {
+    "tenant_id": {
+      "type": "string",
+      "title": "Tenant (Organization) ID",
+      "description": "Multi-tenant isolation key \u2014 the organization this record belongs to."
+    },
+    "employee_id": {
+      "type": "string",
+      "title": "Employee ID"
+    },
+    "employee_name": {
+      "type": "string",
+      "title": "Employee Name"
+    },
+    "department": {
+      "type": "string",
+      "enum": [
+        "restaurant",
+        "operations",
+        "front_desk",
+        "hr",
+        "finance",
+        "general"
+      ],
+      "default": "general",
+      "title": "Department"
+    },
+    "date": {
+      "type": "string",
+      "format": "date",
+      "title": "Attendance Date"
+    },
+    "clock_in_time": {
+      "type": "string",
+      "title": "Clock In Time"
+    },
+    "clock_out_time": {
+      "type": "string",
+      "title": "Clock Out Time"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "present",
+        "late",
+        "absent",
+        "sick_leave",
+        "overtime"
+      ],
+      "default": "present",
+      "title": "Attendance Status"
+    },
+    "hours_worked": {
+      "type": "number",
+      "default": 0,
+      "title": "Hours Worked"
+    },
+    "source": {
+      "type": "string",
+      "enum": [
+        "csv_upload",
+        "biometric_sync",
+        "manual_entry"
+      ],
+      "default": "csv_upload",
+      "title": "Data Source"
+    },
+    "anomaly_flags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "title": "Anomaly Flags"
+    },
+    "batch_id": {
+      "type": "string",
+      "title": "Ingestion Batch ID"
+    }
+  },
+  "required": [
+    "employee_id",
+    "date",
+    "status"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.tenant_id": "{{user.data.tenant_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "super_admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "super_admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "data.tenant_id": "{{user.data.tenant_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "super_admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "data.tenant_id": "{{user.data.tenant_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "super_admin"
+          }
+        }
+      ]
+    }
+  }
+}

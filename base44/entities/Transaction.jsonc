@@ -1,0 +1,184 @@
+{
+  "name": "Transaction",
+  "type": "object",
+  "properties": {
+    "tenant_id": {
+      "type": "string",
+      "title": "Tenant (Organization) ID",
+      "description": "Multi-tenant isolation key \u2014 the organization this record belongs to. Enforced via RLS (data.tenant_id === user.data.tenant_id)."
+    },
+    "transaction_id": {
+      "type": "string",
+      "title": "Transaction ID / Document ID"
+    },
+    "vendor": {
+      "type": "string",
+      "title": "Vendor / Counterparty"
+    },
+    "description": {
+      "type": "string",
+      "title": "Description"
+    },
+    "amount": {
+      "type": "number",
+      "title": "Amount"
+    },
+    "currency": {
+      "type": "string",
+      "title": "Currency",
+      "default": "USD"
+    },
+    "transaction_date": {
+      "type": "string",
+      "format": "date",
+      "title": "Transaction Date"
+    },
+    "category": {
+      "type": "string",
+      "title": "Category"
+    },
+    "location": {
+      "type": "string",
+      "title": "Location"
+    },
+    "payment_method": {
+      "type": "string",
+      "title": "Payment Method"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "clean",
+        "flagged",
+        "quarantined"
+      ],
+      "default": "clean",
+      "title": "Status"
+    },
+    "risk_score": {
+      "type": "number",
+      "title": "Risk Score",
+      "default": 0
+    },
+    "risk_level": {
+      "type": "string",
+      "enum": [
+        "low",
+        "medium",
+        "high",
+        "critical"
+      ],
+      "default": "low",
+      "title": "Risk Level"
+    },
+    "anomaly_flags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "title": "Anomaly Flags"
+    },
+    "flag_evidence": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "flag": {
+            "type": "string",
+            "title": "Flag Name"
+          },
+          "rule_id": {
+            "type": "string",
+            "title": "Rule ID"
+          },
+          "evidence_field": {
+            "type": "string",
+            "title": "Source Field",
+            "description": "The exact record field that triggered this flag."
+          },
+          "evidence_value": {
+            "type": "string",
+            "title": "Source Value",
+            "description": "The actual value of that field, quoted verbatim."
+          },
+          "detail": {
+            "type": "string",
+            "title": "Detail",
+            "description": "Why this value triggered the rule."
+          }
+        },
+        "required": [
+          "flag"
+        ],
+        "title": "Flag Evidence"
+      },
+      "title": "Flag Evidence Trail",
+      "description": "Each flag mapped to the exact source field/value that triggered it. A flag may not be displayed without a corresponding evidence entry."
+    },
+    "procurement_variance": {
+      "type": "object",
+      "title": "Procurement Market Variance Analysis",
+      "description": "Output of the RAVIQEN Procurement Pricing & Market Variance Engine (RULE-PG-01/02/03). Populated automatically when an ingested record is detected as a procurement document."
+    },
+    "batch_id": {
+      "type": "string",
+      "title": "Ingestion Batch ID"
+    },
+    "sector": {
+      "type": "string",
+      "title": "Source Sector"
+    },
+    "verdict_summary": {
+      "type": "string",
+      "title": "Evidence-backed screening verdict or AI briefing"
+    },
+    "audit_status": {
+      "type": "string",
+      "enum": [
+        "APPROVED_CLEARED",
+        "PENDING_REVIEW",
+        "CLOSED_FALSE_POSITIVE"
+      ],
+      "default": "PENDING_REVIEW",
+      "title": "Human audit decision"
+    },
+    "source_filename": {
+      "type": "string",
+      "title": "Ingested Filename"
+    }
+  },
+  "required": [
+    "transaction_id",
+    "vendor",
+    "amount"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.tenant_id": "{{user.data.tenant_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

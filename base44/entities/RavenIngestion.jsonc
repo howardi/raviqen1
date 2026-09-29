@@ -1,0 +1,112 @@
+{
+  "name": "RavenIngestion",
+  "type": "object",
+  "properties": {
+    "tenant_id": {
+      "type": "string"
+    },
+    "source_report_id": {
+      "type": "string"
+    },
+    "department": {
+      "type": "string"
+    },
+    "report_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "title": {
+      "type": "string"
+    },
+    "content": {
+      "type": "string"
+    },
+    "metrics": {
+      "type": "object"
+    },
+    "submitted_by": {
+      "type": "string"
+    },
+    "reviewed_by_id": {
+      "type": "string"
+    },
+    "reviewed_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "tenant_id",
+    "source_report_id",
+    "department",
+    "report_date",
+    "title",
+    "content",
+    "reviewed_by_id",
+    "reviewed_at"
+  ],
+  "rls": {
+    "read": {
+      "$and": [
+        {
+          "data.tenant_id": "{{user.data.tenant_id}}"
+        },
+        {
+          "$or": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "raviqen_role": "manager"
+              }
+            },
+            {
+              "user_condition": {
+                "raviqen_role": "executive"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "create": {
+      "$and": [
+        {
+          "data.tenant_id": "{{user.data.tenant_id}}"
+        },
+        {
+          "$or": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "raviqen_role": "manager"
+              }
+            },
+            {
+              "user_condition": {
+                "raviqen_role": "executive"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "update": {
+      "user_condition": {
+        "role": "raven_immutable"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "raven_immutable"
+      }
+    }
+  }
+}

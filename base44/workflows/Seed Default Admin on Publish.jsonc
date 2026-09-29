@@ -1,0 +1,37 @@
+{
+  "name": "Seed Default Admin on Publish",
+  "description": "Provisions the default Super Admin account (support@raviqen.com) on every app publish \u2014 idempotent, skips if already exists",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "app_publish",
+      "events": [
+        "published"
+      ]
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "seed_default_admin_on_publish",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "seed_admin": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "seedDefaultAdmin",
+            "args": {}
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Seed default Super Admin",
+            "description": "Provision support@raviqen.com as Super Admin (idempotent)"
+          }
+        }
+      }
+    ]
+  }
+}

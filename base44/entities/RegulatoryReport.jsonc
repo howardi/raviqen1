@@ -1,0 +1,129 @@
+{
+  "name": "RegulatoryReport",
+  "type": "object",
+  "properties": {
+    "tenant_id": {
+      "type": "string",
+      "title": "Tenant (Organization) ID",
+      "description": "Multi-tenant isolation key \u2014 the organization this record belongs to. Enforced via RLS (data.tenant_id === user.data.tenant_id)."
+    },
+    "report_id": {
+      "type": "string",
+      "title": "Report ID"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "SAR",
+        "STR",
+        "CTR"
+      ],
+      "default": "SAR",
+      "title": "Report Type"
+    },
+    "title": {
+      "type": "string",
+      "title": "Title"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "submitted",
+        "archived"
+      ],
+      "default": "draft",
+      "title": "Status"
+    },
+    "content": {
+      "type": "string",
+      "title": "Report Content"
+    },
+    "filing_summary": {
+      "type": "string",
+      "title": "Filing Summary"
+    },
+    "investigation_id": {
+      "type": "string",
+      "title": "Linked Investigation ID"
+    },
+    "transaction_id": {
+      "type": "string",
+      "title": "Linked Transaction ID"
+    },
+    "vendor": {
+      "type": "string",
+      "title": "Subject Vendor"
+    },
+    "filed_by": {
+      "type": "string",
+      "title": "Filed By"
+    },
+    "filed_date": {
+      "type": "string",
+      "format": "date",
+      "title": "Filed Date"
+    },
+    "deadline": {
+      "type": "string",
+      "format": "date",
+      "title": "Filing Deadline"
+    }
+  },
+  "required": [
+    "report_id",
+    "type",
+    "title",
+    "status"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "data.tenant_id": "{{user.data.tenant_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "data.tenant_id": "{{user.data.tenant_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "data.tenant_id": "{{user.data.tenant_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "data.tenant_id": "{{user.data.tenant_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

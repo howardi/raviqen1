@@ -1,0 +1,210 @@
+{
+  "name": "User",
+  "type": "object",
+  "properties": {
+    "role": {
+      "type": "string",
+      "description": "The role of the user in the app",
+      "enum": [
+        "pending",
+        "super_admin",
+        "org_admin",
+        "company_admin",
+        "member",
+        "department_user",
+        "executive",
+        "manager",
+        "hr_personnel",
+        "restaurant_manager",
+        "operations",
+        "front_desk",
+        "investigator",
+        "standard_user",
+        "read_only",
+        "admin",
+        "user"
+      ],
+      "default": "pending"
+    },
+    "raviqen_role": {
+      "type": "string",
+      "description": "RAVIQEN-specific role for fine-grained access control",
+      "enum": [
+        "pending",
+        "super_admin",
+        "org_admin",
+        "company_admin",
+        "member",
+        "department_user",
+        "executive",
+        "manager",
+        "hr_personnel",
+        "restaurant_manager",
+        "operations",
+        "front_desk",
+        "investigator",
+        "standard_user",
+        "read_only"
+      ]
+    },
+    "tenant_id": {
+      "type": "string",
+      "description": "The user's tenant (organization) id. Used for multi-tenant data isolation via RLS (data.tenant_id === user.data.tenant_id). Set by the bootstrapTenant function from the user's organization."
+    },
+    "department": {
+      "type": "string",
+      "description": "Assigned oversight department slug. general means unassigned.",
+      "default": "general"
+    },
+    "department_id": {
+      "type": "string",
+      "description": "OversightDepartment record id when assigned"
+    },
+    "requires_reset": {
+      "type": "boolean",
+      "description": "Force password change on next login (set when admin creates manual password)",
+      "default": false
+    },
+    "account_status": {
+      "type": "string",
+      "description": "Account access status \u2014 disabled users cannot log in; pending_setup users must complete guided onboarding",
+      "enum": [
+        "active",
+        "disabled",
+        "pending_setup"
+      ],
+      "default": "active"
+    },
+    "feature_flags": {
+      "type": "object",
+      "title": "Per-User Feature Flags",
+      "description": "Per-module enable/disable toggles for this user. When not set or empty, the user inherits organization defaults.",
+      "default": {},
+      "properties": {
+        "data_ingestion": {
+          "type": "boolean"
+        },
+        "investigations": {
+          "type": "boolean"
+        },
+        "alerts": {
+          "type": "boolean"
+        },
+        "case_management": {
+          "type": "boolean"
+        },
+        "sanctions_screening": {
+          "type": "boolean"
+        },
+        "network_explorer": {
+          "type": "boolean"
+        },
+        "ingestion_screening": {
+          "type": "boolean"
+        },
+        "entity_intelligence": {
+          "type": "boolean"
+        },
+        "autonomous_engine": {
+          "type": "boolean"
+        },
+        "analytics": {
+          "type": "boolean"
+        },
+        "collusion_detector": {
+          "type": "boolean"
+        },
+        "what_if_sandbox": {
+          "type": "boolean"
+        },
+        "insider_threat": {
+          "type": "boolean"
+        },
+        "crypto_audit": {
+          "type": "boolean"
+        },
+        "osint_scanner": {
+          "type": "boolean"
+        },
+        "vendor_verification": {
+          "type": "boolean"
+        },
+        "fx_stress_test": {
+          "type": "boolean"
+        },
+        "regulatory_horizon": {
+          "type": "boolean"
+        },
+        "reports_exports": {
+          "type": "boolean"
+        },
+        "risk_rules": {
+          "type": "boolean"
+        },
+        "daily_reports": {
+          "type": "boolean"
+        },
+        "hr_dashboard": {
+          "type": "boolean"
+        },
+        "activity_stream": {
+          "type": "boolean"
+        },
+        "relief_calendar": {
+          "type": "boolean"
+        },
+        "resource_calculator": {
+          "type": "boolean"
+        },
+        "integrations": {
+          "type": "boolean"
+        },
+        "audit_log": {
+          "type": "boolean"
+        },
+        "ai_chatbox": {
+          "type": "boolean"
+        },
+        "support": {
+          "type": "boolean"
+        },
+        "settings": {
+          "type": "boolean"
+        },
+        "raviqen_oversight": {
+          "type": "boolean"
+        },
+        "staff_ai_chatbox": {
+          "type": "boolean"
+        }
+      }
+    }
+  },
+  "required": [
+    "role"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "id": "{{user.id}}"
+        }
+      ]
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

@@ -1,0 +1,134 @@
+{
+  "name": "HRAlert",
+  "type": "object",
+  "properties": {
+    "tenant_id": {
+      "type": "string",
+      "title": "Tenant (Organization) ID",
+      "description": "Multi-tenant isolation key \u2014 the organization this record belongs to."
+    },
+    "alert_type": {
+      "type": "string",
+      "enum": [
+        "attendance_anomaly",
+        "policy_breach",
+        "background_check_update",
+        "ghost_worker",
+        "unauthorized_overtime",
+        "chronic_absenteeism"
+      ],
+      "default": "attendance_anomaly",
+      "title": "Alert Type"
+    },
+    "employee_id": {
+      "type": "string",
+      "title": "Employee ID"
+    },
+    "employee_name": {
+      "type": "string",
+      "title": "Employee Name"
+    },
+    "department": {
+      "type": "string",
+      "title": "Department"
+    },
+    "severity": {
+      "type": "string",
+      "enum": [
+        "low",
+        "medium",
+        "high",
+        "critical"
+      ],
+      "default": "medium",
+      "title": "Severity"
+    },
+    "description": {
+      "type": "string",
+      "title": "Alert Description"
+    },
+    "evidence": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "title": "Supporting Evidence"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "open",
+        "investigating",
+        "resolved",
+        "dismissed"
+      ],
+      "default": "open",
+      "title": "Status"
+    },
+    "linked_attendance_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "title": "Linked Attendance Record IDs"
+    }
+  },
+  "required": [
+    "alert_type",
+    "employee_id",
+    "severity",
+    "status"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.tenant_id": "{{user.data.tenant_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "super_admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "super_admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "data.tenant_id": "{{user.data.tenant_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "super_admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "data.tenant_id": "{{user.data.tenant_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "super_admin"
+          }
+        }
+      ]
+    }
+  }
+}

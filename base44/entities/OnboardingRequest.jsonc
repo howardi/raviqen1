@@ -1,0 +1,96 @@
+{
+  "name": "OnboardingRequest",
+  "type": "object",
+  "properties": {
+    "organization_name": {
+      "type": "string",
+      "title": "Organization Name"
+    },
+    "contact_name": {
+      "type": "string",
+      "title": "Contact Name"
+    },
+    "contact_email": {
+      "type": "string",
+      "title": "Contact Email"
+    },
+    "industry": {
+      "type": "string",
+      "title": "Industry"
+    },
+    "team_size": {
+      "type": "string",
+      "title": "Team Size"
+    },
+    "preferred_call_time": {
+      "type": "string",
+      "title": "Preferred Call Time"
+    },
+    "training_needs": {
+      "type": "string",
+      "title": "Training Needs"
+    },
+    "user_id": {
+      "type": "string",
+      "title": "Submitting User ID"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "scheduled",
+        "completed",
+        "rejected"
+      ],
+      "default": "pending",
+      "title": "Status"
+    },
+    "admin_notes": {
+      "type": "string",
+      "title": "Admin Notes"
+    },
+    "unlocked_by": {
+      "type": "string",
+      "title": "Unlocked By Admin ID"
+    },
+    "unlocked_date": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Unlocked Date"
+    }
+  },
+  "required": [
+    "organization_name",
+    "contact_email",
+    "preferred_call_time",
+    "status"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.user_id": "{{user.id}}"
+        },
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {},
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

@@ -1,0 +1,150 @@
+{
+  "name": "RavenIssue",
+  "type": "object",
+  "properties": {
+    "tenant_id": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "notes": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "open",
+        "investigating",
+        "investigated",
+        "resolved"
+      ],
+      "default": "open"
+    },
+    "created_by_id_ref": {
+      "type": "string"
+    },
+    "owner": {
+      "type": "string"
+    },
+    "due_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "linked_report_ids": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  },
+  "required": [
+    "tenant_id",
+    "title",
+    "status"
+  ],
+  "rls": {
+    "read": {
+      "$and": [
+        {
+          "data.tenant_id": "{{user.data.tenant_id}}"
+        },
+        {
+          "$or": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "raviqen_role": "manager"
+              }
+            },
+            {
+              "user_condition": {
+                "raviqen_role": "executive"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "create": {
+      "$and": [
+        {
+          "data.tenant_id": "{{user.data.tenant_id}}"
+        },
+        {
+          "$or": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "raviqen_role": "manager"
+              }
+            },
+            {
+              "user_condition": {
+                "raviqen_role": "executive"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "update": {
+      "$and": [
+        {
+          "data.tenant_id": "{{user.data.tenant_id}}"
+        },
+        {
+          "$or": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "raviqen_role": "manager"
+              }
+            },
+            {
+              "user_condition": {
+                "raviqen_role": "executive"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "delete": {
+      "$and": [
+        {
+          "data.tenant_id": "{{user.data.tenant_id}}"
+        },
+        {
+          "$or": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "raviqen_role": "manager"
+              }
+            },
+            {
+              "user_condition": {
+                "raviqen_role": "executive"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

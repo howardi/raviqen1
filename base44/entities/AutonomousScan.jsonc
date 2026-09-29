@@ -1,0 +1,147 @@
+{
+  "name": "AutonomousScan",
+  "type": "object",
+  "properties": {
+    "tenant_id": {
+      "type": "string",
+      "title": "Tenant (Organization) ID",
+      "description": "Multi-tenant isolation key \u2014 the organization this record belongs to. Enforced via RLS (data.tenant_id === user.data.tenant_id)."
+    },
+    "scan_id": {
+      "type": "string",
+      "title": "Scan ID"
+    },
+    "source": {
+      "type": "string",
+      "enum": [
+        "data_ingestion",
+        "manual_upload",
+        "api_connector",
+        "file_drop",
+        "ocr_scan"
+      ],
+      "default": "data_ingestion",
+      "title": "Ingestion Source"
+    },
+    "filename": {
+      "type": "string",
+      "title": "Source Filename"
+    },
+    "batch_id": {
+      "type": "string",
+      "title": "Linked Batch ID"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "scanning",
+        "completed",
+        "failed"
+      ],
+      "default": "scanning",
+      "title": "Scan Status"
+    },
+    "total_records": {
+      "type": "number",
+      "default": 0,
+      "title": "Total Records Scanned"
+    },
+    "quarantined_records": {
+      "type": "number",
+      "default": 0,
+      "title": "Quarantined"
+    },
+    "flagged_records": {
+      "type": "number",
+      "default": 0,
+      "title": "Flagged"
+    },
+    "clean_records": {
+      "type": "number",
+      "default": 0,
+      "title": "Clean"
+    },
+    "entities_resolved": {
+      "type": "number",
+      "default": 0,
+      "title": "Entities Resolved"
+    },
+    "new_entities": {
+      "type": "number",
+      "default": 0,
+      "title": "New Entity Profiles Created"
+    },
+    "alerts_generated": {
+      "type": "number",
+      "default": 0,
+      "title": "Alerts Generated"
+    },
+    "cases_opened": {
+      "type": "number",
+      "default": 0,
+      "title": "Investigation Cases Opened"
+    },
+    "cases_updated": {
+      "type": "number",
+      "default": 0,
+      "title": "Investigation Cases Updated"
+    },
+    "discrepancies": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "title": "All Discrepancies Detected"
+    },
+    "scan_results": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "title": "Per-Record Scan Results"
+    },
+    "triggered_by": {
+      "type": "string",
+      "title": "Triggered By"
+    },
+    "duration_ms": {
+      "type": "number",
+      "default": 0,
+      "title": "Scan Duration (ms)"
+    }
+  },
+  "required": [
+    "scan_id",
+    "source",
+    "status"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.tenant_id": "{{user.data.tenant_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

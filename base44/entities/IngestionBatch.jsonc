@@ -1,0 +1,119 @@
+{
+  "name": "IngestionBatch",
+  "type": "object",
+  "properties": {
+    "tenant_id": {
+      "type": "string",
+      "title": "Tenant (Organization) ID",
+      "description": "Multi-tenant isolation key \u2014 the organization this record belongs to. Enforced via RLS (data.tenant_id === user.data.tenant_id)."
+    },
+    "filename": {
+      "type": "string",
+      "title": "Filename"
+    },
+    "file_url": {
+      "type": "string",
+      "title": "File URL"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "uploaded",
+        "validating",
+        "completed",
+        "failed"
+      ],
+      "default": "uploaded",
+      "title": "Status"
+    },
+    "total_records": {
+      "type": "number",
+      "title": "Total Records",
+      "default": 0
+    },
+    "valid_records": {
+      "type": "number",
+      "title": "Valid Records",
+      "default": 0
+    },
+    "quarantined_records": {
+      "type": "number",
+      "title": "Quarantined Records",
+      "default": 0
+    },
+    "flagged_records": {
+      "type": "number",
+      "title": "Flagged Records",
+      "default": 0
+    },
+    "data_source": {
+      "type": "string",
+      "title": "Data Source Type"
+    },
+    "validation_errors": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "title": "Validation Errors"
+    },
+    "uploaded_by": {
+      "type": "string",
+      "title": "Uploaded By"
+    }
+  },
+  "required": [
+    "filename",
+    "status"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "data.tenant_id": "{{user.data.tenant_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "data.tenant_id": "{{user.data.tenant_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "data.tenant_id": "{{user.data.tenant_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "data.tenant_id": "{{user.data.tenant_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

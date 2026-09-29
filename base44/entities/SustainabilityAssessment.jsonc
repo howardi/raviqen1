@@ -1,0 +1,203 @@
+{
+  "name": "SustainabilityAssessment",
+  "type": "object",
+  "properties": {
+    "tenant_id": {
+      "type": "string",
+      "title": "Tenant (Organization) ID",
+      "description": "Multi-tenant isolation key \u2014 the organization this record belongs to. Enforced via RLS (data.tenant_id === user.data.tenant_id)."
+    },
+    "supplier_name": {
+      "type": "string",
+      "title": "Supplier / Vendor Name"
+    },
+    "supply_chain_region": {
+      "type": "string",
+      "title": "Supply Chain Region"
+    },
+    "industry_sector": {
+      "type": "string",
+      "title": "Industry Sector"
+    },
+    "carbon_footprint_tons": {
+      "type": "number",
+      "default": 0,
+      "title": "Carbon Footprint (tons CO2e/year)"
+    },
+    "energy_source_renewable_pct": {
+      "type": "number",
+      "default": 0,
+      "title": "Renewable Energy (%)"
+    },
+    "water_usage_liters": {
+      "type": "number",
+      "default": 0,
+      "title": "Annual Water Usage (liters)"
+    },
+    "waste_generated_tons": {
+      "type": "number",
+      "default": 0,
+      "title": "Waste Generated (tons/year)"
+    },
+    "waste_recycled_pct": {
+      "type": "number",
+      "default": 0,
+      "title": "Waste Recycled (%)"
+    },
+    "fair_labor_score": {
+      "type": "number",
+      "default": 0,
+      "title": "Fair Labor Compliance Score (0-100)"
+    },
+    "child_labor_risk": {
+      "type": "string",
+      "enum": [
+        "none",
+        "low",
+        "moderate",
+        "high",
+        "severe"
+      ],
+      "default": "none",
+      "title": "Child Labor Risk"
+    },
+    "wage_compliance": {
+      "type": "string",
+      "enum": [
+        "compliant",
+        "partial",
+        "non_compliant",
+        "unknown"
+      ],
+      "default": "unknown",
+      "title": "Living Wage Compliance"
+    },
+    "working_hours_compliance": {
+      "type": "string",
+      "enum": [
+        "compliant",
+        "partial",
+        "non_compliant",
+        "unknown"
+      ],
+      "default": "unknown",
+      "title": "Working Hours Compliance"
+    },
+    "safety_score": {
+      "type": "number",
+      "default": 0,
+      "title": "Workplace Safety Score (0-100)"
+    },
+    "environmental_impact_score": {
+      "type": "number",
+      "default": 0,
+      "title": "Environmental Impact Score (0-100)"
+    },
+    "overall_sustainability_score": {
+      "type": "number",
+      "default": 0,
+      "title": "Overall Sustainability Score (0-100)"
+    },
+    "sustainability_grade": {
+      "type": "string",
+      "enum": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "F"
+      ],
+      "default": "F",
+      "title": "Sustainability Grade"
+    },
+    "assessment_date": {
+      "type": "string",
+      "format": "date",
+      "title": "Assessment Date"
+    },
+    "assessed_by": {
+      "type": "string",
+      "title": "Assessed By"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "in_progress",
+        "completed",
+        "flagged"
+      ],
+      "default": "pending",
+      "title": "Assessment Status"
+    },
+    "recommendations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "title": "AI Recommendations"
+    },
+    "flag_reasons": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "title": "Flag Reasons"
+    }
+  },
+  "required": [
+    "supplier_name",
+    "assessment_date",
+    "status"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "data.tenant_id": "{{user.data.tenant_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "data.tenant_id": "{{user.data.tenant_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "data.tenant_id": "{{user.data.tenant_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "data.tenant_id": "{{user.data.tenant_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

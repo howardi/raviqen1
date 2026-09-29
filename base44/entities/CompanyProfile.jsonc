@@ -1,0 +1,69 @@
+{
+  "name": "CompanyProfile",
+  "type": "object",
+  "properties": {
+    "company_name": {
+      "type": "string",
+      "title": "Company Name"
+    },
+    "logo_url": {
+      "type": "string",
+      "title": "Logo URL"
+    },
+    "address": {
+      "type": "string",
+      "title": "Business Address"
+    },
+    "registration_number": {
+      "type": "string",
+      "title": "Registration / License Number"
+    },
+    "contact_email": {
+      "type": "string",
+      "title": "Primary Contact Email"
+    },
+    "contact_phone": {
+      "type": "string",
+      "title": "Primary Contact Phone"
+    },
+    "notification_email": {
+      "type": "string",
+      "title": "Notification / Alert Email",
+      "description": "Dedicated email address that receives daily reports, activity alerts, and system notifications"
+    },
+    "notification_preferences": {
+      "type": "object",
+      "title": "Notification Preferences",
+      "description": "Which alert types to send to the notification email"
+    },
+    "brand_color": {
+      "type": "string",
+      "title": "Brand Accent Color"
+    },
+    "footer_text": {
+      "type": "string",
+      "title": "Report Footer Text"
+    }
+  },
+  "required": [
+    "company_name"
+  ],
+  "rls": {
+    "read": {},
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

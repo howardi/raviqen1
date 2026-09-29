@@ -1,0 +1,184 @@
+{
+  "name": "Employee",
+  "type": "object",
+  "properties": {
+    "tenant_id": {
+      "type": "string",
+      "title": "Tenant (Organization) ID",
+      "description": "Multi-tenant isolation key \u2014 the organization this record belongs to."
+    },
+    "employee_id": {
+      "type": "string",
+      "title": "Employee ID"
+    },
+    "full_name": {
+      "type": "string",
+      "title": "Full Name"
+    },
+    "department": {
+      "type": "string",
+      "enum": [
+        "restaurant",
+        "operations",
+        "front_desk",
+        "hr",
+        "finance",
+        "general"
+      ],
+      "default": "general",
+      "title": "Department"
+    },
+    "role_title": {
+      "type": "string",
+      "title": "Role / Job Title"
+    },
+    "date_of_joining": {
+      "type": "string",
+      "format": "date",
+      "title": "Date of Joining"
+    },
+    "employment_status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "on_leave",
+        "suspended",
+        "terminated"
+      ],
+      "default": "active",
+      "title": "Employment Status"
+    },
+    "employment_type": {
+      "type": "string",
+      "enum": [
+        "full_time",
+        "part_time",
+        "contract"
+      ],
+      "default": "full_time",
+      "title": "Employment Type"
+    },
+    "base_salary": {
+      "type": "number",
+      "default": 0,
+      "title": "Monthly Base Salary"
+    },
+    "hourly_rate": {
+      "type": "number",
+      "default": 0,
+      "title": "Hourly Rate"
+    },
+    "standard_hours_per_day": {
+      "type": "number",
+      "default": 8,
+      "title": "Standard Hours Per Day"
+    },
+    "standard_days_per_month": {
+      "type": "number",
+      "default": 22,
+      "title": "Standard Working Days Per Month"
+    },
+    "national_id_ssn": {
+      "type": "string",
+      "title": "National ID / SSN"
+    },
+    "tax_number": {
+      "type": "string",
+      "title": "Tax Number / TIN"
+    },
+    "bank_account_details": {
+      "type": "string",
+      "title": "Bank Account Details"
+    },
+    "contact_phone": {
+      "type": "string",
+      "title": "Contact Phone"
+    },
+    "emergency_contact": {
+      "type": "string",
+      "title": "Emergency Contact"
+    },
+    "linked_background_check_id": {
+      "type": "string",
+      "title": "Linked Background Check ID"
+    },
+    "risk_score": {
+      "type": "number",
+      "default": 0,
+      "title": "HR Risk Score (0-100)"
+    },
+    "risk_flags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "title": "Active Risk Flags"
+    },
+    "attendance_summary": {
+      "type": "object",
+      "title": "Attendance Summary Stats"
+    },
+    "profile_metadata": {
+      "type": "object",
+      "title": "Additional Profile Metadata"
+    }
+  },
+  "required": [
+    "employee_id",
+    "full_name",
+    "department",
+    "employment_status"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.tenant_id": "{{user.data.tenant_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "super_admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "super_admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "data.tenant_id": "{{user.data.tenant_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "super_admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "data.tenant_id": "{{user.data.tenant_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "super_admin"
+          }
+        }
+      ]
+    }
+  }
+}

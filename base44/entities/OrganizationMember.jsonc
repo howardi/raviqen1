@@ -1,0 +1,152 @@
+{
+  "name": "OrganizationMember",
+  "type": "object",
+  "properties": {
+    "organization_id": {
+      "type": "string",
+      "title": "Organization ID"
+    },
+    "organization_name": {
+      "type": "string",
+      "title": "Organization Name"
+    },
+    "user_id": {
+      "type": "string",
+      "title": "User ID"
+    },
+    "user_email": {
+      "type": "string",
+      "title": "User Email"
+    },
+    "user_name": {
+      "type": "string",
+      "title": "User Name"
+    },
+    "role": {
+      "type": "string",
+      "enum": [
+        "company_admin",
+        "executive",
+        "manager",
+        "hr_personnel",
+        "restaurant_manager",
+        "operations",
+        "front_desk",
+        "investigator",
+        "standard_user",
+        "read_only",
+        "member",
+        "pending"
+      ],
+      "default": "member",
+      "title": "Member Role"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "invited",
+        "suspended"
+      ],
+      "default": "invited",
+      "title": "Member Status"
+    },
+    "invited_by": {
+      "type": "string",
+      "title": "Invited By User ID"
+    }
+  },
+  "required": [
+    "organization_id",
+    "user_email",
+    "role",
+    "status"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "super_admin"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "org_admin"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "company_admin"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "data.user_id": "{{user.id}}"
+        },
+        {
+          "data.invited_by": "{{user.id}}"
+        },
+        {
+          "created_by_id": "{{user.id}}"
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "super_admin"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "org_admin"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "company_admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "super_admin"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "org_admin"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "company_admin"
+          }
+        }
+      ]
+    }
+  }
+}

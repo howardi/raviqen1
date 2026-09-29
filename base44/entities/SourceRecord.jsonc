@@ -1,0 +1,112 @@
+{
+  "name": "SourceRecord",
+  "type": "object",
+  "properties": {
+    "tenant_id": {
+      "type": "string",
+      "title": "Tenant (Organization) ID",
+      "description": "Multi-tenant isolation key \u2014 the organization this record belongs to. Enforced via RLS (data.tenant_id === user.data.tenant_id)."
+    },
+    "investigation_id": {
+      "type": "string",
+      "title": "Investigation ID"
+    },
+    "source_type": {
+      "type": "string",
+      "enum": [
+        "quickbooks",
+        "ezee_burrp",
+        "inventory",
+        "pos"
+      ],
+      "title": "Source Type"
+    },
+    "record_type": {
+      "type": "string",
+      "title": "Record Type"
+    },
+    "external_id": {
+      "type": "string",
+      "title": "External Record ID"
+    },
+    "vendor": {
+      "type": "string",
+      "title": "Vendor / Customer"
+    },
+    "amount": {
+      "type": "number",
+      "title": "Amount"
+    },
+    "record_date": {
+      "type": "string",
+      "title": "Record Date"
+    },
+    "match_status": {
+      "type": "string",
+      "enum": [
+        "matches",
+        "discrepancy",
+        "not_found",
+        "pending"
+      ],
+      "default": "pending",
+      "title": "Match Status"
+    },
+    "details": {
+      "type": "string",
+      "title": "Details Summary"
+    },
+    "raw_data": {
+      "type": "string",
+      "title": "Raw Source Data"
+    }
+  },
+  "required": [
+    "investigation_id",
+    "source_type",
+    "record_type"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.tenant_id": "{{user.data.tenant_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

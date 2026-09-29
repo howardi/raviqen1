@@ -1,0 +1,58 @@
+{
+  "name": "AuditLogEntry",
+  "type": "object",
+  "properties": {
+    "tenant_id": {
+      "type": "string",
+      "title": "Tenant (Organization) ID",
+      "description": "Multi-tenant isolation key \u2014 the organization this record belongs to."
+    },
+    "user": {
+      "type": "string",
+      "title": "User"
+    },
+    "action": {
+      "type": "string",
+      "title": "Action"
+    },
+    "entity_type": {
+      "type": "string",
+      "title": "Entity Type"
+    },
+    "entity_id": {
+      "type": "string",
+      "title": "Entity ID"
+    },
+    "detail": {
+      "type": "string",
+      "title": "Detail"
+    },
+    "ip_address": {
+      "type": "string",
+      "title": "IP Address"
+    }
+  },
+  "required": [
+    "user",
+    "action",
+    "detail"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {},
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

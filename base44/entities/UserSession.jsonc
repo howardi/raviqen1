@@ -1,0 +1,100 @@
+{
+  "name": "UserSession",
+  "type": "object",
+  "properties": {
+    "tenant_id": {
+      "type": "string",
+      "title": "Tenant (Organization) ID",
+      "description": "Multi-tenant isolation key \u2014 the organization this record belongs to."
+    },
+    "user_email": {
+      "type": "string",
+      "title": "User Email"
+    },
+    "user_name": {
+      "type": "string",
+      "title": "User Name"
+    },
+    "login_time": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Login Timestamp"
+    },
+    "logout_time": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Logout Timestamp"
+    },
+    "ip_address": {
+      "type": "string",
+      "title": "IP Address"
+    },
+    "location": {
+      "type": "string",
+      "title": "Geo Location"
+    },
+    "device": {
+      "type": "string",
+      "title": "Device / User Agent"
+    },
+    "session_duration": {
+      "type": "number",
+      "title": "Session Duration (minutes)",
+      "default": 0
+    },
+    "actions_count": {
+      "type": "number",
+      "title": "Actions Performed",
+      "default": 0
+    },
+    "bulk_exports": {
+      "type": "number",
+      "title": "Bulk Exports",
+      "default": 0
+    },
+    "risk_flags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "title": "Risk Flags"
+    },
+    "threat_level": {
+      "type": "string",
+      "enum": [
+        "normal",
+        "elevated",
+        "suspicious",
+        "critical"
+      ],
+      "default": "normal",
+      "title": "Threat Level"
+    }
+  },
+  "required": [
+    "user_email",
+    "login_time"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

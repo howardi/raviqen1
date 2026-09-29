@@ -1,0 +1,275 @@
+{
+  "name": "EntityProfile",
+  "type": "object",
+  "properties": {
+    "tenant_id": {
+      "type": "string",
+      "title": "Tenant (Organization) ID",
+      "description": "Multi-tenant isolation key \u2014 the organization this record belongs to. Enforced via RLS (data.tenant_id === user.data.tenant_id)."
+    },
+    "profile_id": {
+      "type": "string",
+      "title": "Profile ID"
+    },
+    "legal_name": {
+      "type": "string",
+      "title": "Legal Name"
+    },
+    "trading_name": {
+      "type": "string",
+      "title": "Trading Name"
+    },
+    "entity_type": {
+      "type": "string",
+      "enum": [
+        "vendor",
+        "buyer",
+        "both"
+      ],
+      "default": "vendor",
+      "title": "Entity Type"
+    },
+    "tax_id": {
+      "type": "string",
+      "title": "Tax ID / TIN / VAT"
+    },
+    "registration_number": {
+      "type": "string",
+      "title": "Corporate Registration Number (CAC)"
+    },
+    "bank_accounts": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "title": "Known Bank Accounts"
+    },
+    "address": {
+      "type": "string",
+      "title": "Registered Address"
+    },
+    "contact_email": {
+      "type": "string",
+      "title": "Contact Email"
+    },
+    "contact_phone": {
+      "type": "string",
+      "title": "Contact Phone"
+    },
+    "country": {
+      "type": "string",
+      "title": "Country"
+    },
+    "industry": {
+      "type": "string",
+      "title": "Industry"
+    },
+    "baseline_risk_tag": {
+      "type": "string",
+      "enum": [
+        "low_risk",
+        "medium_risk",
+        "high_watch",
+        "blacklisted"
+      ],
+      "default": "low_risk",
+      "title": "Baseline Risk Tag"
+    },
+    "total_invoices": {
+      "type": "number",
+      "default": 0,
+      "title": "Total Invoices Processed"
+    },
+    "lifetime_exposure": {
+      "type": "number",
+      "default": 0,
+      "title": "Lifetime Exposure"
+    },
+    "exposure_currency": {
+      "type": "string",
+      "default": "USD",
+      "title": "Exposure Currency"
+    },
+    "avg_invoice_amount": {
+      "type": "number",
+      "default": 0,
+      "title": "Average Invoice Amount"
+    },
+    "payment_frequency_days": {
+      "type": "number",
+      "default": 0,
+      "title": "Avg Days Between Payments"
+    },
+    "currency_distribution": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "title": "Currency Distribution"
+    },
+    "standard_hours": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "title": "Standard Transaction Hours"
+    },
+    "typical_categories": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "title": "Typical Invoice Categories"
+    },
+    "risk_score": {
+      "type": "number",
+      "default": 0,
+      "title": "Composite Risk Score (0-100)"
+    },
+    "risk_level": {
+      "type": "string",
+      "enum": [
+        "low",
+        "medium",
+        "high",
+        "critical"
+      ],
+      "default": "low",
+      "title": "Risk Level"
+    },
+    "risk_trend": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "title": "Historical Risk Trend"
+    },
+    "active_anomaly_flags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "title": "Active Anomaly Flags"
+    },
+    "screening_status": {
+      "type": "string",
+      "enum": [
+        "clear",
+        "pending",
+        "flagged",
+        "sanctioned"
+      ],
+      "default": "pending",
+      "title": "Screening Status"
+    },
+    "sanctions_check": {
+      "type": "string",
+      "enum": [
+        "clear",
+        "match",
+        "partial_match",
+        "not_checked"
+      ],
+      "default": "not_checked",
+      "title": "Sanctions Check"
+    },
+    "pep_check": {
+      "type": "string",
+      "enum": [
+        "clear",
+        "match",
+        "not_checked"
+      ],
+      "default": "not_checked",
+      "title": "PEP Check"
+    },
+    "linked_counterparties": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "title": "Linked Counterparties"
+    },
+    "shared_identifiers": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "title": "Shared Identifiers"
+    },
+    "collusion_probability": {
+      "type": "number",
+      "default": 0,
+      "title": "Collusion Probability"
+    },
+    "case_file_ref": {
+      "type": "string",
+      "title": "Open Case File Reference"
+    },
+    "workflow_recommendations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "title": "Workflow Recommendations"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "under_review",
+        "suspended",
+        "blacklisted"
+      ],
+      "default": "active",
+      "title": "Profile Status"
+    },
+    "last_screened": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Last Screened"
+    },
+    "first_seen": {
+      "type": "string",
+      "format": "date",
+      "title": "First Seen"
+    },
+    "last_activity": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Last Activity"
+    }
+  },
+  "required": [
+    "legal_name"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.tenant_id": "{{user.data.tenant_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

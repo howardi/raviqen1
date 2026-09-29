@@ -1,0 +1,153 @@
+{
+  "name": "VendorVerification",
+  "type": "object",
+  "properties": {
+    "tenant_id": {
+      "type": "string",
+      "title": "Tenant (Organization) ID",
+      "description": "Multi-tenant isolation key \u2014 the organization this record belongs to. Enforced via RLS (data.tenant_id === user.data.tenant_id)."
+    },
+    "vendor": {
+      "type": "string",
+      "title": "Vendor Name"
+    },
+    "verification_status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "in_progress",
+        "verified",
+        "flagged",
+        "rejected"
+      ],
+      "default": "pending",
+      "title": "Verification Status"
+    },
+    "kyb_status": {
+      "type": "string",
+      "enum": [
+        "not_started",
+        "questionnaire_sent",
+        "completed",
+        "failed"
+      ],
+      "default": "not_started",
+      "title": "KYB Questionnaire Status"
+    },
+    "identity_score": {
+      "type": "number",
+      "title": "Identity Confidence Score",
+      "default": 0
+    },
+    "registration_number": {
+      "type": "string",
+      "title": "Registration Number"
+    },
+    "country_of_incorporation": {
+      "type": "string",
+      "title": "Country of Incorporation"
+    },
+    "beneficial_owners": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "title": "Beneficial Owners"
+    },
+    "documents": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "title": "Verification Documents"
+    },
+    "sanctions_check": {
+      "type": "string",
+      "enum": [
+        "clear",
+        "match",
+        "partial_match",
+        "not_checked"
+      ],
+      "default": "not_checked",
+      "title": "Sanctions Check"
+    },
+    "pep_check": {
+      "type": "string",
+      "enum": [
+        "clear",
+        "match",
+        "not_checked"
+      ],
+      "default": "not_checked",
+      "title": "PEP Check"
+    },
+    "risk_assessment": {
+      "type": "string",
+      "title": "AI Risk Assessment"
+    },
+    "verified_by": {
+      "type": "string",
+      "title": "Verified By"
+    },
+    "verification_date": {
+      "type": "string",
+      "format": "date",
+      "title": "Verification Date"
+    }
+  },
+  "required": [
+    "vendor",
+    "verification_status"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "data.tenant_id": "{{user.data.tenant_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "data.tenant_id": "{{user.data.tenant_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "data.tenant_id": "{{user.data.tenant_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "data.tenant_id": "{{user.data.tenant_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

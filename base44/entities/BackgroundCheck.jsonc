@@ -1,0 +1,246 @@
+{
+  "name": "BackgroundCheck",
+  "type": "object",
+  "properties": {
+    "tenant_id": {
+      "type": "string",
+      "title": "Tenant (Organization) ID",
+      "description": "Multi-tenant isolation key \u2014 the organization this record belongs to."
+    },
+    "candidate_name": {
+      "type": "string",
+      "title": "Candidate Full Name"
+    },
+    "national_id": {
+      "type": "string",
+      "title": "National ID / SSN"
+    },
+    "tax_number": {
+      "type": "string",
+      "title": "Tax Number / TIN"
+    },
+    "date_of_birth": {
+      "type": "string",
+      "format": "date",
+      "title": "Date of Birth"
+    },
+    "position_applied": {
+      "type": "string",
+      "title": "Position Applied For"
+    },
+    "department": {
+      "type": "string",
+      "enum": [
+        "restaurant",
+        "operations",
+        "front_desk",
+        "hr",
+        "finance",
+        "general"
+      ],
+      "default": "general",
+      "title": "Target Department"
+    },
+    "previous_employer": {
+      "type": "string",
+      "title": "Most Recent Employer"
+    },
+    "identity_verification": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "verified",
+        "mismatch",
+        "failed"
+      ],
+      "default": "pending",
+      "title": "Identity Verification"
+    },
+    "criminal_record_check": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "clear",
+        "flagged",
+        "failed"
+      ],
+      "default": "pending",
+      "title": "Criminal Record Check"
+    },
+    "past_employment_check": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "verified",
+        "discrepancy",
+        "failed"
+      ],
+      "default": "pending",
+      "title": "Past Employment Verification"
+    },
+    "education_verification": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "verified",
+        "discrepancy",
+        "failed"
+      ],
+      "default": "pending",
+      "title": "Education Verification"
+    },
+    "sanctions_check": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "clear",
+        "match",
+        "partial_match"
+      ],
+      "default": "pending",
+      "title": "Sanctions / Watchlist Check"
+    },
+    "credit_check": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "clear",
+        "flagged",
+        "failed"
+      ],
+      "default": "pending",
+      "title": "Credit History Check"
+    },
+    "overall_status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "in_progress",
+        "cleared",
+        "flagged",
+        "rejected"
+      ],
+      "default": "pending",
+      "title": "Overall Screening Status"
+    },
+    "risk_score": {
+      "type": "number",
+      "default": 0,
+      "title": "Composite Risk Score (0-100)"
+    },
+    "risk_level": {
+      "type": "string",
+      "enum": [
+        "low",
+        "medium",
+        "high",
+        "critical"
+      ],
+      "default": "low",
+      "title": "Risk Level"
+    },
+    "flags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "title": "Risk Flags"
+    },
+    "screening_results": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "title": "Detailed Screening Results"
+    },
+    "ai_assessment": {
+      "type": "string",
+      "title": "AI Risk Assessment"
+    },
+    "recommendations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "title": "Hiring Recommendations"
+    },
+    "screened_by": {
+      "type": "string",
+      "title": "Screened By"
+    },
+    "screening_date": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Screening Date"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "screening",
+        "completed",
+        "archived"
+      ],
+      "default": "pending",
+      "title": "Record Status"
+    }
+  },
+  "required": [
+    "candidate_name",
+    "national_id",
+    "overall_status",
+    "status"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.tenant_id": "{{user.data.tenant_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "super_admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "super_admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "data.tenant_id": "{{user.data.tenant_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "super_admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "data.tenant_id": "{{user.data.tenant_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "super_admin"
+          }
+        }
+      ]
+    }
+  }
+}

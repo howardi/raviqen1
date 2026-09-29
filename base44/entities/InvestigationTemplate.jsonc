@@ -1,0 +1,62 @@
+{
+  "name": "InvestigationTemplate",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "title": "Template Name"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "procurement",
+        "payroll",
+        "vendor_payment",
+        "expenses",
+        "transfers",
+        "fraud",
+        "compliance",
+        "general"
+      ],
+      "default": "general",
+      "title": "Category"
+    },
+    "notes_template": {
+      "type": "string",
+      "title": "Notes Template"
+    },
+    "findings_template": {
+      "type": "string",
+      "title": "Findings Template"
+    },
+    "recommended_actions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "title": "Recommended Actions"
+    }
+  },
+  "required": [
+    "name",
+    "category"
+  ],
+  "rls": {
+    "read": {},
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

@@ -1,0 +1,114 @@
+{
+  "name": "ExtractionReview",
+  "type": "object",
+  "properties": {
+    "tenant_id": {
+      "type": "string",
+      "title": "Tenant (Organization) ID",
+      "description": "Multi-tenant isolation key \u2014 the organization this review belongs to."
+    },
+    "document_id": {
+      "type": "string",
+      "title": "Source Document ID"
+    },
+    "source_filename": {
+      "type": "string",
+      "title": "Source Filename"
+    },
+    "field_name": {
+      "type": "string",
+      "title": "Extracted Field Name",
+      "description": "The specific field extracted with low confidence (amount, date, vendor, bank_account, line_item, etc.)."
+    },
+    "extracted_value": {
+      "type": "string",
+      "title": "Extracted Value"
+    },
+    "confidence_score": {
+      "type": "number",
+      "title": "Extraction Confidence Score (0-1)",
+      "default": 0
+    },
+    "source_location": {
+      "type": "string",
+      "title": "Source Location",
+      "description": "Pointer to the exact origin: page, line, cell, or OCR bounding box."
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "reviewed",
+        "resolved",
+        "rejected"
+      ],
+      "default": "pending",
+      "title": "Review Status"
+    },
+    "reviewer": {
+      "type": "string",
+      "title": "Reviewer"
+    },
+    "review_notes": {
+      "type": "string",
+      "title": "Reviewer Notes"
+    },
+    "corrected_value": {
+      "type": "string",
+      "title": "Corrected Value"
+    },
+    "linked_transaction_id": {
+      "type": "string",
+      "title": "Linked Transaction ID"
+    }
+  },
+  "required": [
+    "document_id",
+    "field_name",
+    "confidence_score",
+    "status"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.tenant_id": "{{user.data.tenant_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "data.tenant_id": "{{user.data.tenant_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "data.tenant_id": "{{user.data.tenant_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
