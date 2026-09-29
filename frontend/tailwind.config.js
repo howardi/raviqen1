@@ -1,7 +1,14 @@
+const path = require("path");
+
+const root = __dirname;
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
     darkMode: ["class"],
-    content: ["./index.html", "./src/**/*.{ts,tsx,js,jsx}"],
+    content: [
+      path.join(root, "index.html").replace(/\\/g, "/"),
+      path.join(root, "src/**/*.{ts,tsx,js,jsx}").replace(/\\/g, "/"),
+    ],
   theme: {
   	extend: {
   		opacity: Object.fromEntries(Array.from({ length: 101 }, (_, i) => [i, `${i / 100}`])),

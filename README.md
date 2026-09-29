@@ -85,3 +85,20 @@ Tenant GM roles: `org_admin`, `company_admin`, plus `executive` and platform `su
 
 Default slugs: `hr`, `procurement` (storekeeper), `restaurant`, `finance` (accountant), `audit`, `operations`, `front_desk`, `maintenance`.
 
+## Self-hosted layout
+
+The React app lives in `frontend/`. The hostable API lives in `backend/` and uses MongoDB database `raviqen`.
+
+```bash
+npm install
+npm install --prefix backend
+copy backend\env.example backend\.env
+npm run dev:backend
+npm run build
+npm start
+```
+
+Set `MONGODB_HOST` (Atlas cluster host) or `MONGODB_URI` in `backend/.env`. The Voyage key for `ai.mongodb.com` is only for embeddings. It does not open the database. Do not commit `backend/.env`.
+
+`npm start` serves the API and the built frontend on port 4000.
+
