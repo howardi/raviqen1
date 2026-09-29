@@ -1,7 +1,7 @@
 import { Toaster } from "@/components/ui/toaster"
 import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClientInstance } from '@/lib/query-client'
-import { BrowserRouter as Router, Route, Routes, useLocation, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, useLocation, Navigate, useParams } from 'react-router-dom';
 import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
@@ -12,6 +12,7 @@ import Dashboard from "@/pages/Dashboard";
 import OversightHome from "@/pages/OversightHome";
 import OversightSubmit from "@/pages/OversightSubmit";
 import OversightAwaiting from "@/pages/OversightAwaiting";
+import OversightDepartment from "@/pages/OversightDepartment";
 import OversightInvestigation from "@/pages/OversightInvestigation";
 import Investigations from "@/pages/Investigations";
 import InvestigationDetail from "@/pages/InvestigationDetail";
@@ -52,6 +53,11 @@ import About from "@/pages/About";
 import Checkout from "@/pages/Checkout";
 import { CurrencyProvider } from "@/lib/CurrencyContext";
 import { CompanyProfileProvider } from "@/lib/CompanyProfileContext";
+
+function RavenDepartmentRedirect() {
+  const { department } = useParams();
+  return <Navigate to={`/oversight/${department}`} replace />;
+}
 
 const PUBLIC_PATHS = ['/', '/login', '/register', '/forgot-password', '/reset-password', '/oauth/consent', '/get-started', '/platform', '/pricing', '/about', '/checkout'];
 
@@ -108,11 +114,11 @@ const AuthenticatedApp = () => {
         <Route path="/oversight/submit" element={<OversightSubmit />} />
         <Route path="/oversight/awaiting-assignment" element={<OversightAwaiting />} />
         <Route path="/oversight/investigation" element={<OversightInvestigation />} />
-        <Route path="/oversight/:department" element={<Navigate to="/oversight" replace />} />
+        <Route path="/oversight/:department" element={<OversightDepartment />} />
         <Route path="/raven" element={<Navigate to="/oversight" replace />} />
         <Route path="/raven/submit" element={<Navigate to="/oversight/submit" replace />} />
         <Route path="/raven/investigation" element={<Navigate to="/oversight/investigation" replace />} />
-        <Route path="/raven/:department" element={<Navigate to="/oversight" replace />} />
+        <Route path="/raven/:department" element={<RavenDepartmentRedirect />} />
         <Route path="/investigations" element={<Investigations />} />
         <Route path="/investigations/:id" element={<InvestigationDetail />} />
         <Route path="/ingestion" element={<DataIngestion />} />

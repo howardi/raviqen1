@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Outlet, NavLink, useLocation, Navigate } from "react-router-dom";
-import { LayoutDashboard, ShieldAlert, FileSearch, Upload, Settings, LifeBuoy, MessageSquare, Menu, X, Columns3, TrendingUp, Download, Plug, History, Users, Globe, IdCard, ScanSearch, Building2, ClipboardList, Search, Sun, Moon, LogOut, CalendarDays, Calculator, BookOpen, ChevronDown, FileText, ShoppingCart, Hotel } from "lucide-react";
+import { LayoutDashboard, ShieldAlert, FileSearch, Upload, Settings, LifeBuoy, MessageSquare, Menu, X, Columns3, ShieldCheck, TrendingUp, Download, Plug, History, Users, Globe, IdCard, ScanSearch, Building2, ClipboardList, Search, Sun, Moon, LogOut, CalendarDays, Calculator, BookOpen, ChevronDown, FileText, ShoppingCart, Hotel, Workflow, UtensilsCrossed, Wrench } from "lucide-react";
 import { buildUserManualPdf, buildUserManualWord } from "@/lib/userManual";
 import { cn } from "@/lib/utils";
 import { Image } from "@/components/ui/image";
@@ -8,15 +8,31 @@ import { base44 } from "@/api/base44Client";
 import { useAuth } from "@/lib/AuthContext";
 import { useCompanyProfile } from "@/lib/CompanyProfileContext";
 import { canAccessRoute, getRoleLabel, getRoleColor, normalizeUserRole, getRoleHomeRoute, isFullAccessRole } from "@/lib/permissions";
-import { needsDepartmentAssignment } from "@/lib/oversight";
+import { needsDepartmentAssignment, DEFAULT_OVERSIGHT_DEPARTMENTS } from "@/lib/oversight";
 import NotificationBell from "@/components/NotificationBell";
 import GlobalSearch from "@/components/GlobalSearch";
+
+const OVERSIGHT_ICONS = {
+  hr: Users,
+  procurement: ShoppingCart,
+  restaurant: UtensilsCrossed,
+  finance: Calculator,
+  audit: ShieldCheck,
+  operations: Workflow,
+  front_desk: Hotel,
+  maintenance: Wrench,
+};
 
 const navGroups = [
   {
     label: "Raviqen Oversight",
     items: [
       { to: "/oversight", label: "Raviqen Inbox", icon: ClipboardList, end: true },
+      ...DEFAULT_OVERSIGHT_DEPARTMENTS.map((dept) => ({
+        to: `/oversight/${dept.slug}`,
+        label: dept.nav_label,
+        icon: OVERSIGHT_ICONS[dept.slug] || ClipboardList,
+      })),
       { to: "/oversight/investigation", label: "Overall Business Investigation", icon: FileSearch },
     ],
   },

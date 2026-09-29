@@ -5,7 +5,6 @@ import { base44 } from "@/api/base44Client";
 import { useAuth } from "@/lib/AuthContext";
 import { normalizeUserRole } from "@/lib/permissions";
 import { DEFAULT_OVERSIGHT_DEPARTMENTS, isOversightManagerRole, weeklyPurchaseSummary } from "@/lib/oversight";
-import OversightDepartmentNav from "@/components/oversight/OversightDepartmentNav";
 import OversightReportList from "@/components/oversight/OversightReportList";
 import OversightAnalysis from "@/components/oversight/OversightAnalysis";
 
@@ -83,7 +82,6 @@ export default function OversightDepartment() {
         <p className="text-xs uppercase tracking-wide text-slate-500">Raviqen · Department oversight</p>
         <h1 className="text-2xl font-bold text-slate-900">{dept.nav_label || dept.name}</h1>
       </header>
-      <OversightDepartmentNav />
       {!user?.tenant_id ? (
         <p role="alert" className="text-amber-700">Assign your organization before reviewing reports.</p>
       ) : loading ? (
