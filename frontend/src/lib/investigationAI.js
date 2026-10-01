@@ -1,4 +1,5 @@
 import { base44 } from "@/api/base44Client";
+import { claimsAreGrounded, groundFinancialImpact, groundSimilarCases } from "@/lib/llmGrounding";
 
 // Step 2: AI Grounded Risk Summary
 export async function generateRiskSummary(investigation, alert, evidenceItems) {
@@ -24,7 +25,18 @@ Write a concise 4-5 sentence risk summary explaining WHY this transaction was fl
       },
     },
   });
-  return typeof res === "string" ? { summary: res, confidence: "medium", cited_signals: [] } : res;
+  const parsed = typeof res === "string" ? { summary: res, confidence: "low", cited_signals: [] } : (res || {});
+  const labels = new Set((evidenceItems || []).map((item) => item.label));
+  const cited = (parsed.cited_signals || []).filter((signal) => labels.has(signal));
+  const source = JSON.stringify({ investigation, alert, evidenceItems });
+  if (!claimsAreGrounded(parsed.summary, source) || cited.length !== (parsed.cited_signals || []).length) {
+    return {
+      summary: "Review the recorded evidence signals only. The model added a figure or signal that is not in this investigation.",
+      confidence: "low",
+      cited_signals: cited,
+    };
+  }
+  return { summary: parsed.summary, confidence: parsed.confidence || "low", cited_signals: cited };
 }
 
 // Step 4: AI Recommended Actions
@@ -98,7 +110,8 @@ Identify up to 3 cases that are most similar (same vendor, similar flag reasons,
       },
     },
   });
-  return typeof res === "string" ? { similar_cases: [] } : res;
+  const parsed = typeof res === "string" ? { similar_cases: [] } : (res || {});
+  return { similar_cases: groundSimilarCases(parsed.similar_cases, others.map((item) => item.id)) };
 }
 
 // Step 4: Natural-language Q&A
@@ -128,7 +141,12 @@ Answer concisely in 2-3 sentences. If the answer cannot be determined from the p
       },
     },
   });
-  return typeof res === "string" ? { answer: res, can_answer: true } : res;
+  const parsed = typeof res === "string" ? { answer: res, can_answer: false } : (res || {});
+  const source = JSON.stringify({ investigation, alert, evidenceItems, crossRefResults });
+  if (!parsed.answer || !claimsAreGrounded(parsed.answer, source)) {
+    return { answer: "That cannot be answered from the recorded investigation, alert, and evidence.", can_answer: false };
+  }
+  return { answer: parsed.answer, can_answer: parsed.can_answer !== false };
 }
 
 // Step 5: Auto-generate investigation report
@@ -234,5 +252,5 @@ Estimate the potential financial exposure (direct loss + recovery cost + reputat
       },
     },
   });
-  return typeof res === "string" ? { estimated_exposure: amount, impact_category: "moderate", factors: [] } : res;
+  return groundFinancialImpact(amount);
 }

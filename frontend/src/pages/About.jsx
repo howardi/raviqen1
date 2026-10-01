@@ -12,10 +12,10 @@ const VALUES = [
 ];
 
 const STATS = [
-  { value: "24/7", label: "Autonomous Monitoring" },
-  { value: "100%", label: "Data Integrity" },
-  { value: "30+", label: "Platform Modules" },
-  { value: "AI", label: "Risk Detection" },
+  { value: "24/7", label: "Autonomous Monitoring", detail: "Continuously monitors business activity and operational data." },
+  { value: "360°", label: "Business Visibility", detail: "Centralises critical information for a clearer view of your business." },
+  { value: "AI", label: "Risk & Anomaly Detection", detail: "Identifies unusual activity, control gaps, and emerging risks." },
+  { value: "1", label: "Intelligent Layer", detail: "One intelligent layer connecting your business information, reporting, operations, and risk intelligence." },
 ];
 
 export default function About() {
@@ -43,15 +43,19 @@ export default function About() {
             >
               About <span className="text-emerald-400">RAVIQEN</span>
             </motion.h1>
-            <motion.p
+            <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1 }}
-              className="mt-4 text-base text-slate-400 max-w-2xl mx-auto"
+              className="mt-4 space-y-4 text-base text-slate-400 max-w-3xl mx-auto leading-relaxed"
             >
-              We build the intelligent layer that sits above your business systems — turning
-              thousands of daily transactions into clear, prioritised risk insight.
-            </motion.p>
+              <p>
+                We build the intelligent layer that sits above your business systems — turning thousands of daily transactions and operational activities into clear, prioritised intelligence.
+              </p>
+              <p>
+                RAVIQEN helps businesses centralise information, streamline reporting, and gain greater visibility across their daily operations, while continuously analysing business data to uncover unusual transactions, control gaps, procurement irregularities, financial anomalies, and other potential risks.
+              </p>
+            </motion.div>
           </div>
         </section>
 
@@ -60,12 +64,18 @@ export default function About() {
           <div className="max-w-3xl mx-auto text-center">
             <Target className="w-10 h-10 text-emerald-400 mx-auto mb-4" />
             <h2 className="text-2xl font-bold text-white">Our Mission</h2>
-            <p className="mt-4 text-sm text-slate-400 leading-relaxed">
-              Every business collects data. Most can't see the risk hidden inside it. RAVIQEN
-              exists to change that — giving teams the intelligence to detect anomalies, investigate
-              with evidence, and remediate with confidence. We believe risk should be seen early,
-              understood clearly, and acted on decisively.
-            </p>
+            <div className="mt-4 space-y-4 text-sm text-slate-400 leading-relaxed">
+              <p>
+                Every business collects data. Most can’t see the risk hidden inside it — or easily turn that information into a clear picture of what is happening across the business.
+              </p>
+              <p className="text-white font-medium">RAVIQEN exists to change that.</p>
+              <p>
+                We give teams the intelligence to see what is happening, detect anomalies, investigate with evidence, streamline reporting, and act with confidence. By bringing critical business information together and continuously analysing it, RAVIQEN helps businesses identify what needs attention before it becomes a bigger problem.
+              </p>
+              <p>
+                We believe business intelligence should be centralised, visible, actionable, and always working for you.
+              </p>
+            </div>
           </div>
         </section>
 
@@ -83,7 +93,8 @@ export default function About() {
                 >
                   <div className="absolute top-0 right-0 w-16 h-16 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none" />
                   <p className="text-2xl font-bold text-white relative">{stat.value}</p>
-                  <p className="text-[10px] text-slate-500 uppercase tracking-wide mt-1 relative">{stat.label}</p>
+                  <p className="text-[10px] text-slate-400 uppercase tracking-wide mt-1 relative">{stat.label}</p>
+                  <p className="text-[11px] text-slate-500 leading-snug mt-1.5 relative">{stat.detail}</p>
                 </motion.div>
               ))}
             </div>

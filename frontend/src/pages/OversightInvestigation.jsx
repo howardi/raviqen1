@@ -4,7 +4,8 @@ import { jsPDF } from "jspdf";
 import { base44 } from "@/api/base44Client";
 import { useAuth } from "@/lib/AuthContext";
 import { normalizeUserRole } from "@/lib/permissions";
-import { DEFAULT_OVERSIGHT_DEPARTMENTS, isOversightManagerRole } from "@/lib/oversight";
+import { BRAND_PROMISE, DEFAULT_OVERSIGHT_DEPARTMENTS, isOversightManagerRole } from "@/lib/oversight";
+import { RISK_CATEGORIES, mandateFromFinding } from "@/lib/riskMandate";
 import { buildInvestigationReport } from "@/lib/reportFraud";
 import OversightAnalysis from "@/components/oversight/OversightAnalysis";
 
@@ -25,6 +26,8 @@ function downloadReport(doc) {
     ...(doc.issues.length ? doc.issues.map((i) => `${i.status} · ${i.title} · ${i.owner}`) : ["None"]),
     "",
     doc.conclusion,
+    "",
+    "Turn business data into clearer visibility, stronger controls, and smarter decisions.",
   ].join("\n"), 180);
   let y = 16;
   lines.forEach((line) => {
@@ -144,6 +147,7 @@ export default function OversightInvestigation() {
       <header>
         <p className="text-xs uppercase tracking-wide text-slate-500">Raviqen · Manager only</p>
         <h1 className="text-2xl font-bold text-slate-900">Overall Business Investigation</h1>
+        <p className="mt-2 max-w-3xl text-sm text-slate-600">{BRAND_PROMISE}</p>
       </header>
       {!user?.tenant_id ? (
         <p role="alert">Assign your organization to use this workspace.</p>
@@ -181,6 +185,30 @@ export default function OversightInvestigation() {
             </div>
             <p className="mt-4 text-sm text-slate-700">{document.conclusion}</p>
           </section>
+          <section className="rounded-xl border border-slate-200 bg-white p-5">
+            <h2 className="font-bold">Discrepancy matrix</h2>
+            <p className="mt-1 text-xs text-slate-500">Each row is taken from a submitted report. Nothing is added beyond the recorded figures.</p>
+            <div className="mt-4 space-y-4">
+              {RISK_CATEGORIES.map((category) => {
+                const rows = document.findings.filter((item) => mandateFromFinding(item).category === category.label);
+                return (
+                  <div key={category.id}>
+                    <h3 className="text-sm font-semibold text-slate-800">{category.label}</h3>
+                    {rows.length ? rows.map((item, index) => {
+                      const mandate = mandateFromFinding(item, item.department);
+                      return (
+                        <article key={`${item.report_id}-${index}`} className="mt-2 rounded-lg bg-slate-50 p-3 text-sm">
+                          <p><span className="font-semibold">What requires attention. </span>{mandate.attention}</p>
+                          <p className="mt-1"><span className="font-semibold">Where it matters. </span>{mandate.where}</p>
+                          <p className="mt-1"><span className="font-semibold">When to act. </span>{mandate.when}</p>
+                        </article>
+                      );
+                    }) : <p className="mt-1 text-sm text-slate-500">None in the current submissions.</p>}
+                  </div>
+                );
+              })}
+            </div>
+          </section>
           <OversightAnalysis label="Cross-department" />
           <section className="rounded-xl border border-slate-200 bg-white p-5">
             <h2 className="font-bold">Meeting issues & action items</h2>
@@ -199,11 +227,10 @@ export default function OversightInvestigation() {
                 <article key={i.id} className="rounded-lg border p-3">
                   <div className="flex flex-wrap justify-between gap-2">
                     <strong className="text-sm">{i.title}</strong>
-                    <select aria-label={`Status for ${i.title}`} value={i.status === "investigated" ? "investigating" : i.status} disabled={busy} onChange={(e) => setStatus(i, e.target.value)} className="rounded border px-2 py-1 text-xs">
-                      <option value="open">Open</option>
-                      <option value="investigating">Investigating</option>
-                      <option value="resolved">Resolved</option>
-                    </select>
+                    <div className="flex gap-2">
+                      <button type="button" disabled={busy} onClick={() => setStatus(i, "investigated")} className={`rounded px-2 py-1 text-xs ${i.status === "investigated" ? "bg-slate-900 text-white" : "border"}`}>Investigated</button>
+                      <button type="button" disabled={busy} onClick={() => setStatus(i, "resolved")} className={`rounded px-2 py-1 text-xs ${i.status === "resolved" ? "bg-emerald-700 text-white" : "border"}`}>Resolved</button>
+                    </div>
                   </div>
                   <p className="mt-1 text-xs text-slate-500">{i.owner || "Unassigned"}{i.due_date ? ` · ${i.due_date}` : ""}</p>
                   <p className="mt-2 whitespace-pre-wrap text-sm text-slate-600">{i.notes}</p>

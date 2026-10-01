@@ -149,7 +149,7 @@ export const ROLE_HOME_ROUTES = {
 export const getRoleHomeRoute = (user) => {
   const role = normalizeUserRole(user);
   if (needsDepartmentAssignment(user, role)) return "/oversight/awaiting-assignment";
-  if (isOversightManagerRole(role)) return "/dashboard";
+  if (isOversightManagerRole(role)) return "/oversight";
   if (isFullAccessRole(role)) return "/dashboard";
   return "/oversight/submit";
 };

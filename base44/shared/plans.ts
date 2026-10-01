@@ -27,16 +27,20 @@ export const PLAN_PRICES: Record<string, number | null> = {
 const STARTER_FEATURES = [
   "data_ingestion", "investigations", "alerts", "risk_rules", "reports_exports",
   "audit_log", "support", "settings", "daily_reports", "activity_stream",
+  "centralised_information", "operational_visibility", "anomaly_detection",
 ];
 const GROWTH_FEATURES = [
   ...STARTER_FEATURES, "autonomous_engine", "analytics", "ingestion_screening",
   "network_explorer", "case_management", "what_if_sandbox", "integrations",
   "relief_calendar", "resource_calculator",
+  "multi_location_information", "operational_monitoring", "business_visibility", "advanced_reporting",
 ];
 const PROFESSIONAL_FEATURES = [
   ...GROWTH_FEATURES, "entity_intelligence", "sanctions_screening", "vendor_verification",
   "regulatory_horizon", "collusion_detector", "osint_scanner", "fx_stress_test",
   "crypto_audit", "insider_threat", "hr_dashboard",
+  "organisation_intelligence", "realtime_visibility", "procurement_monitoring",
+  "financial_controls", "compliance_reporting",
 ];
 
 export const PLAN_FEATURE_GATES: Record<string, string[] | null> = {

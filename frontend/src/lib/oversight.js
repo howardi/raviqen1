@@ -1,11 +1,14 @@
 export const OVERSIGHT_HERO =
-  "Manage your daily operations, centralise information, streamline reporting and gain better visibility into your business activities.";
+  "AI-powered intelligence for smarter business control. RAVIQEN brings your business information and daily operations into one intelligent platform, helping you centralise information, streamline reporting, and gain greater visibility into your business activities.";
+
+export const BRAND_PROMISE =
+  "Turn business data into clearer visibility, stronger controls, and smarter decisions.";
 
 export const OVERSIGHT_MANAGER_ROLES = ["super_admin", "org_admin", "company_admin", "executive"];
 
 export const DEFAULT_OVERSIGHT_DEPARTMENTS = [
   { slug: "hr", name: "HR", nav_label: "HR Dashboard", sort_order: 10, cutoff_time: "18:00", purchases: false },
-  { slug: "procurement", name: "Storekeeper", nav_label: "Storekeeper Dashboard", sort_order: 20, cutoff_time: "18:00", purchases: true },
+  { slug: "procurement", name: "Procurement", nav_label: "Procurement Dashboard", sort_order: 20, cutoff_time: "18:00", purchases: true },
   { slug: "restaurant", name: "Restaurant Manager", nav_label: "Restaurant Dashboard", sort_order: 30, cutoff_time: "18:00", purchases: false },
   { slug: "finance", name: "Accountant", nav_label: "Accountant Dashboard", sort_order: 40, cutoff_time: "18:00", purchases: false },
   { slug: "audit", name: "Auditor", nav_label: "Audit Dashboard", sort_order: 50, cutoff_time: "18:00", purchases: false },

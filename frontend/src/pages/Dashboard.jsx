@@ -327,7 +327,6 @@ export default function Dashboard() {
           <section className="rounded-xl border border-slate-200 bg-white p-5">
             <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Raviqen management oversight</p>
             <h2 className="mt-2 max-w-3xl text-xl font-bold text-slate-900">{OVERSIGHT_HERO}</h2>
-            <Link to="/oversight" className="mt-4 inline-flex rounded-lg bg-slate-900 px-3 py-2 text-sm font-semibold text-white">Open Raviqen Inbox</Link>
           </section>
         )}
         {hasNoData ? (

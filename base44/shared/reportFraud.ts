@@ -95,7 +95,52 @@ export function analyzeReportFraud({ report, history = [], purchases = [] }) {
       if (price === 0 || price == null) findings.push(finding("ZERO_PRICE", "high", "Purchase has no unit price", line.item || `Line ${index + 1}`, "Match the line to a receipt before approval."));
       if (qty === 0) findings.push(finding("ZERO_QTY", "medium", "Purchase quantity is zero", line.item || `Line ${index + 1}`, "Confirm the goods received note."));
       if (median && price != null && price > median * 3) findings.push(finding("PRICE_VARIANCE", "critical", "Unit price is more than triple the day's median", `${line.item}: ${price} vs median ${median}`, "Compare with recent invoices and expected pricing before payment."));
+      if (price > 0 && qty > 0 && !String(line.receipt || line.receipt_url || line.file_url || "").trim()) {
+        findings.push(finding("MISSING_RECEIPT", "medium", "Purchase has no receipt", line.item || `Line ${index + 1}`, "Attach the supplier receipt before the line is ingested."));
+      }
     });
+    const seen = new Map();
+    purchases.forEach((line, index) => {
+      const key = [String(line.item || "").trim().toLowerCase(), String(line.supplier || "").trim().toLowerCase(), num(line.unit_price), num(line.quantity)].join("|");
+      if (seen.has(key)) {
+        findings.push(finding("DUPLICATE_LINE", "high", "Duplicate purchase line", `${line.item || `Line ${index + 1}`} repeats line ${seen.get(key) + 1} with the same supplier, quantity, and unit price.`, "Confirm this is not a double posting before payment."));
+      } else seen.set(key, index);
+    });
+    const priorLines = history.flatMap((row) => row.purchases || []);
+    purchases.forEach((line) => {
+      const price = num(line.unit_price);
+      const item = String(line.item || "").trim().toLowerCase();
+      const supplier = String(line.supplier || "").trim().toLowerCase();
+      if (!item || price == null || price <= 0) return;
+      const earlier = priorLines
+        .map((row) => ({ item: String(row.item || "").trim().toLowerCase(), supplier: String(row.supplier || "").trim().toLowerCase(), price: num(row.unit_price) }))
+        .filter((row) => row.item === item && row.supplier === supplier && row.price > 0);
+      const priorPrice = earlier.length ? earlier[earlier.length - 1].price : null;
+      if (priorPrice && price >= priorPrice * 1.5) {
+        findings.push(finding("PRICE_CLIMB", "high", "Unit price jumped against the last matching purchase", `${line.item}: ${price} versus prior ${priorPrice}${supplier ? ` from ${line.supplier}` : ""}.`, "Compare the new receipt with the last accepted invoice before payment."));
+      }
+    });
+    const bySupplier = new Map();
+    purchases.forEach((line) => {
+      const supplier = String(line.supplier || "").trim().toLowerCase();
+      const price = num(line.unit_price);
+      const qty = num(line.quantity);
+      if (!supplier || price == null || qty == null || price <= 0 || qty <= 0) return;
+      const bucket = bySupplier.get(supplier) || [];
+      bucket.push({ item: String(line.item || "").trim().toLowerCase(), total: price * qty, label: line.supplier });
+      bySupplier.set(supplier, bucket);
+    });
+    for (const [, lines] of bySupplier) {
+      if (lines.length < 3) continue;
+      const amounts = lines.map((line) => line.total).filter((total) => total >= 1000);
+      if (amounts.length < 3) continue;
+      const average = amounts.reduce((sum, total) => sum + total, 0) / amounts.length;
+      const tight = amounts.every((total) => Math.abs(total - average) / average <= 0.05);
+      const distinctItems = new Set(lines.map((line) => line.item)).size >= 2;
+      if (tight && distinctItems) {
+        findings.push(finding("SPLIT", "high", "Repeated similar amounts to one supplier", `${lines.length} lines for ${lines[0].label} are within 5% of each other.`, "Check whether one purchase was split to stay under a review limit."));
+      }
+    }
     const issued = num(metrics.stock_issued);
     const received = num(metrics.stock_received);
     if (issued != null && received != null && issued > received * 1.25 && issued > 0) {

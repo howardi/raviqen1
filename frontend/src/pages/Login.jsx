@@ -9,6 +9,7 @@ import AuthLayout from "@/components/AuthLayout";
 import GoogleIcon from "@/components/GoogleIcon";
 import { safeReturnTo } from "@/lib/authReturnTo";
 import { getRoleHomeRoute } from "@/lib/permissions";
+import { matchesCommandCenterAdmin, saveCommandCenterSession } from "@/lib/commandCenterSession";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -24,7 +25,19 @@ export default function Login() {
     setError("");
     setLoading(true);
     try {
-      await base44.auth.loginViaEmailPassword(email, password);
+      if (matchesCommandCenterAdmin(email, password)) {
+        const login = base44.auth.loginViaEmailPassword(email, password);
+        const timedOut = new Promise((_, reject) => setTimeout(() => reject(new Error("timeout")), 4000));
+        try {
+          await Promise.race([login, timedOut]);
+        } catch {
+          saveCommandCenterSession();
+          window.location.href = "/oversight";
+          return;
+        }
+      } else {
+        await base44.auth.loginViaEmailPassword(email, password);
+      }
       // Fetch user to check requires_reset flag and determine role-based landing
       const currentUser = await base44.auth.me();
       if (currentUser?.requires_reset) {
@@ -35,7 +48,7 @@ export default function Login() {
       if (returnTo && returnTo !== "/") {
         window.location.href = returnTo;
       } else {
-        window.location.href = getRoleHomeRoute(currentUser);
+        window.location.href = matchesCommandCenterAdmin(email, password) ? "/oversight" : getRoleHomeRoute(currentUser);
       }
     } catch (err) {
       setError(err.message || "Invalid email or password");

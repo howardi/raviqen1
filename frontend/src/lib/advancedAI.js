@@ -1,4 +1,5 @@
 import { base44 } from "@/api/base44Client";
+import { claimsAreGrounded, groundSanctionsResult } from "@/lib/llmGrounding";
 
 // AI-powered sanctions screening — screens entity against known watchlists
 export async function screenEntityAgainstSanctions(transaction) {
@@ -27,7 +28,7 @@ Provide a screening result with match status, confidence score (0-100), matched 
       },
     },
   });
-  return typeof res === "string" ? { match_status: "pending", confidence: 0, risk_factors: [], recommended_action: "Review required", screening_notes: res } : res;
+  return groundSanctionsResult(typeof res === "string" ? { screening_notes: res } : res);
 }
 
 // AI analytics insights — generates actionable insights from risk data
@@ -39,7 +40,7 @@ Current metrics:
 - Total transactions: ${stats.totalTx}
 - Flagged: ${stats.flagged}
 - Critical: ${stats.critical}
-- Total exposure: $${(stats.exposure || 0).toLocaleString()}
+- Total exposure amount as recorded: ${stats.exposure ?? "unavailable"}
 - Average risk score: ${stats.avgRisk?.toFixed(1)}
 
 Top anomalies:
@@ -48,7 +49,7 @@ ${(anomalies || []).slice(0, 5).map((a, i) => `${i + 1}. ${a.transaction_id} —
 Risk factor scores:
 ${(riskFactors || []).map((f) => `- ${f.label}: ${f.score}/100 (weight ${f.weight}%)`).join("\n")}
 
-Generate 3 key insights: the most significant risk pattern, a predictive observation about emerging threats, and a specific recommended action. Be concise, specific, and grounded in the data.`,
+State only patterns that are visible in the metrics and anomalies above. Do not predict events, name vendors, or cite amounts that are not in this data. Recommend human review only.`,
     response_json_schema: {
       type: "object",
       properties: {
@@ -67,7 +68,13 @@ Generate 3 key insights: the most significant risk pattern, a predictive observa
       },
     },
   });
-  return typeof res === "string" ? { insights: [], summary: res } : res;
+  const parsed = typeof res === "string" ? { insights: [], summary: res } : (res || { insights: [], summary: "" });
+  const source = JSON.stringify({ stats, anomalies: (anomalies || []).slice(0, 5), riskFactors });
+  const summary = claimsAreGrounded(parsed.summary, source)
+    ? parsed.summary
+    : `Flagged ${stats.flagged ?? 0} of ${stats.totalTx ?? 0} transactions. Critical count is ${stats.critical ?? 0}. Review the recorded anomalies only.`;
+  const insights = (parsed.insights || []).filter((item) => claimsAreGrounded(`${item.title || ""} ${item.description || ""}`, source));
+  return { insights, summary };
 }
 
 // AI network risk cluster detection — finds suspicious transaction groups
@@ -102,7 +109,14 @@ Identify clusters linked by: same vendor with multiple high-risk transactions, s
       },
     },
   });
-  return typeof res === "string" ? { clusters: [] } : res;
+  const parsed = typeof res === "string" ? { clusters: [] } : (res || {});
+  const known = new Set(txSummary.map((row) => String(row.vendor || "").toLowerCase()).filter(Boolean));
+  const source = JSON.stringify(txSummary);
+  const clusters = (parsed.clusters || []).map((cluster) => ({
+    ...cluster,
+    entities: (cluster.entities || []).filter((name) => known.has(String(name).toLowerCase())),
+  })).filter((cluster) => cluster.entities.length > 0 && claimsAreGrounded(`${cluster.pattern || ""} ${cluster.recommendation || ""}`, source));
+  return { clusters };
 }
 
 // AI regulatory report generation (SAR/STR/CTR)

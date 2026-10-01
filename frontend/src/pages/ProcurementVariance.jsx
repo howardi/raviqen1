@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { ShoppingCart, Upload, Loader2, FileX, TrendingUp, ChevronDown, ChevronRight, ShieldCheck, AlertTriangle, ShieldX } from "lucide-react";
 import ItemMarketReport from "@/components/procurement/ItemMarketReport";
 import ProcurementExportToolbar from "@/components/procurement/ProcurementExportToolbar";
 import { cn } from "@/lib/utils";
+import { analyzeProcurementVariance } from "@/lib/procurementVariance";
 import RiskBadge from "@/components/RiskBadge";
 import BackToTop from "@/components/BackToTop";
 
@@ -12,7 +13,9 @@ export default function ProcurementVariance() {
   const batchId = new URLSearchParams(window.location.search).get("batch") || "";
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [liveNote, setLiveNote] = useState("");
   const [expandedId, setExpandedId] = useState(null);
+  const checkedIds = useRef(new Set());
 
   useEffect(() => {
     (async () => {
@@ -26,6 +29,34 @@ export default function ProcurementVariance() {
       }
     })();
   }, [batchId]);
+
+  useEffect(() => {
+    const pending = transactions.filter((row) => {
+      const items = row.procurement_variance?.market_variance_analysis || [];
+      return items.length > 0 && items.every((item) => !item.market_source_url) && !checkedIds.current.has(row.id);
+    }).slice(0, 8);
+    if (!pending.length || loading) return undefined;
+    let cancelled = false;
+    (async () => {
+      setLiveNote(`Checking ${pending.length} live listing${pending.length === 1 ? "" : "s"}. A price is kept only when it is printed on the fetched page.`);
+      for (const row of pending) {
+        if (cancelled) return;
+        checkedIds.current.add(row.id);
+        try {
+          const next = await analyzeProcurementVariance(row, { skipMarket: false });
+          if (!next || cancelled) continue;
+          const stored = { ...next };
+          delete stored._analysis;
+          await base44.entities.Transaction.update(row.id, { procurement_variance: stored });
+          setTransactions((current) => current.map((item) => item.id === row.id ? { ...item, procurement_variance: stored } : item));
+        } catch (error) {
+          if (!cancelled) setLiveNote(error.message || "Live market check failed. No price was estimated.");
+        }
+      }
+      if (!cancelled) setLiveNote("Live check finished. Variances appear only for prices found on the cited page.");
+    })();
+    return () => { cancelled = true; };
+  }, [loading]);
 
   const stats = transactions.reduce(
     (acc, t) => {
@@ -79,6 +110,7 @@ export default function ProcurementVariance() {
         <div className="flex items-start gap-2.5 p-4 rounded-xl bg-blue-50/60 border border-blue-100">
           <TrendingUp className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
           <p className="text-xs text-blue-700">
+            {liveNote ? `${liveNote} ` : ""}
             Invoices, receipts, purchase orders and itemized spreadsheets ingested via the{" "}
             <Link to="/ingestion" className="font-semibold underline">Data Ingestion</Link> page are automatically
             checked item by item for invoice arithmetic and source-backed anomalies. Bulk scans do not invent market prices; items without a cited comparable listing remain unpriced rather than cleared. Findings require human review, not automatic fraud conclusions.

@@ -85,13 +85,11 @@ export default function GetStarted() {
             </h1>
 
             <p className="mt-5 text-sm sm:text-base text-slate-300 leading-relaxed max-w-xl">
-              RAVIQEN detects risk signals, highlights anomalies, and protects your organisation —
-              turning the data your systems already collect into clear, prioritised intelligence
-              so your team can act earlier.
+              RAVIQEN brings your business information and daily operations into one intelligent platform, helping you centralise information, streamline reporting, and gain greater visibility into your business activities.
             </p>
 
             <p className="mt-3 text-sm text-emerald-300 font-medium italic">
-              Your systems collect the data. RAVIQEN finds the risk.
+              Turn business data into clearer visibility, stronger controls, and smarter decisions.
             </p>
 
             {/* Pillars */}

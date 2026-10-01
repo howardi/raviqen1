@@ -1,10 +1,11 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Navigate, useParams } from "react-router-dom";
 import { jsPDF } from "jspdf";
+import { Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { base44 } from "@/api/base44Client";
 import { useAuth } from "@/lib/AuthContext";
 import { normalizeUserRole } from "@/lib/permissions";
-import { DEFAULT_OVERSIGHT_DEPARTMENTS, isOversightManagerRole, weeklyPurchaseSummary } from "@/lib/oversight";
+import { BRAND_PROMISE, DEFAULT_OVERSIGHT_DEPARTMENTS, isOversightManagerRole, weeklyPurchaseSummary } from "@/lib/oversight";
 import OversightReportList from "@/components/oversight/OversightReportList";
 import OversightAnalysis from "@/components/oversight/OversightAnalysis";
 
@@ -42,7 +43,7 @@ export default function OversightDepartment() {
   const week = weeklyPurchaseSummary(purchases);
 
   const exportCsv = () => {
-    const lines = [["Report ID", "Date", "Metric", "Value"], ...numeric.map((x) => ["", x.date, x.key, x.value])];
+    const lines = [[BRAND_PROMISE], ["Report ID", "Date", "Metric", "Value"], ...numeric.map((x) => ["", x.date, x.key, x.value])];
     const csv = lines.map((row) => row.map((x) => `"${String(x ?? "").replaceAll('"', '""')}"`).join(",")).join("\r\n");
     const url = URL.createObjectURL(new Blob([csv], { type: "text/csv" }));
     const anchor = document.createElement("a");
@@ -55,8 +56,9 @@ export default function OversightDepartment() {
   const exportPdf = () => {
     const doc = new jsPDF();
     doc.text(`Raviqen · ${dept.nav_label || dept.name}`, 14, 16);
-    ingested.slice(0, 20).forEach((row, index) => {
-      doc.text(`${row.report_date} ${row.title}`.slice(0, 80), 14, 28 + index * 8);
+    doc.text(BRAND_PROMISE, 14, 24);
+    ingested.slice(0, 18).forEach((row, index) => {
+      doc.text(`${row.report_date} ${row.title}`.slice(0, 80), 14, 36 + index * 8);
     });
     doc.save(`raviqen-${department}.pdf`);
   };
@@ -96,6 +98,16 @@ export default function OversightDepartment() {
           {numeric.length > 0 && (
             <section className="rounded-xl border border-slate-200 bg-white p-5">
               <h2 className="font-bold">Ingested metrics</h2>
+              <div className="mt-4 h-56">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={numeric.slice(0, 12).map((m) => ({ name: m.key.replaceAll("_", " "), value: m.value }))}>
+                    <XAxis dataKey="name" tick={{ fontSize: 11 }} interval={0} angle={-20} height={50} />
+                    <YAxis tick={{ fontSize: 11 }} />
+                    <Tooltip />
+                    <Bar dataKey="value" fill="#0f172a" radius={4} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
               <div className="mt-4 space-y-2">
                 {numeric.slice(0, 12).map((m, i) => (
                   <div key={`${m.date}-${m.key}-${i}`} className="flex items-center gap-2 text-xs">

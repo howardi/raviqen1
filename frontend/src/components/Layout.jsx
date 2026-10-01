@@ -8,7 +8,9 @@ import { base44 } from "@/api/base44Client";
 import { useAuth } from "@/lib/AuthContext";
 import { useCompanyProfile } from "@/lib/CompanyProfileContext";
 import { canAccessRoute, getRoleLabel, getRoleColor, normalizeUserRole, getRoleHomeRoute, isFullAccessRole } from "@/lib/permissions";
-import { needsDepartmentAssignment, DEFAULT_OVERSIGHT_DEPARTMENTS } from "@/lib/oversight";
+import { needsDepartmentAssignment, DEFAULT_OVERSIGHT_DEPARTMENTS, isOversightManagerRole } from "@/lib/oversight";
+import { clearCommandCenterSession } from "@/lib/commandCenterSession";
+import OversightDepartmentNav from "@/components/oversight/OversightDepartmentNav";
 import NotificationBell from "@/components/NotificationBell";
 import GlobalSearch from "@/components/GlobalSearch";
 
@@ -27,7 +29,7 @@ const navGroups = [
   {
     label: "Raviqen Oversight",
     items: [
-      { to: "/oversight", label: "Raviqen Inbox", icon: ClipboardList, end: true },
+      { to: "/oversight", label: "Command Center", icon: LayoutDashboard, end: true },
       ...DEFAULT_OVERSIGHT_DEPARTMENTS.map((dept) => ({
         to: `/oversight/${dept.slug}`,
         label: dept.nav_label,
@@ -170,6 +172,7 @@ export default function Layout() {
   }, [isDark]);
 
   const handleLogout = async () => {
+    clearCommandCenterSession();
     await base44.auth.logout("/");
   };
 
@@ -347,6 +350,11 @@ export default function Layout() {
 
         {/* Main content */}
         <main className="flex-1 min-w-0">
+          {isOversightManagerRole(role) && location.pathname.startsWith("/oversight") && (
+            <div className="sticky top-0 z-20 border-b border-slate-200 bg-white px-4 py-3">
+              <OversightDepartmentNav />
+            </div>
+          )}
           <Outlet />
         </main>
       </div>

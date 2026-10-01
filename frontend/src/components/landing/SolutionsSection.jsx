@@ -7,21 +7,26 @@ import {
 } from "lucide-react";
 
 const INDUSTRIES = [
-  { icon: UtensilsCrossed, title: "Hospitality", desc: "POS integration, daily reports, payroll fraud detection, and procurement monitoring for hotels and restaurants." },
-  { icon: Landmark, title: "Financial Services", desc: "AML transaction monitoring, sanctions screening, SAR/STR generation, and regulatory reporting." },
-  { icon: ShoppingBag, title: "Retail", desc: "Procurement fraud, vendor risk scoring, and supply chain anomaly detection across store networks." },
-  { icon: HeartPulse, title: "Healthcare", desc: "Billing anomaly detection, vendor compliance, and regulatory adherence for healthcare providers." },
-  { icon: Factory, title: "Manufacturing", desc: "Supply chain integrity, vendor verification, and procurement fraud monitoring." },
-  { icon: Building2, title: "Government", desc: "Public sector fraud detection, grant monitoring, and procurement compliance." },
+  { icon: UtensilsCrossed, title: "Hospitality", lead: "See the full picture across your hotel or restaurant operations.", body: "Connect POS data, daily sales reports, payroll, procurement, and operational information in one intelligent layer. Gain greater visibility into daily activities while detecting revenue leakage, payroll fraud, unusual transactions, procurement irregularities, and control gaps." },
+  { icon: Landmark, title: "Financial Services", lead: "Turn complex financial data into actionable intelligence.", body: "Centralise transaction and operational information, streamline reporting, and continuously monitor for AML risks, sanctions concerns, unusual transactions, and regulatory exceptions — with evidence ready for investigation and reporting." },
+  { icon: ShoppingBag, title: "Retail", lead: "Bring visibility across every store, vendor, and transaction.", body: "Centralise operational and sales information while monitoring procurement, vendors, transactions, and supply chains for anomalies, fraud indicators, control gaps, and unusual activity." },
+  { icon: HeartPulse, title: "Healthcare", lead: "Strengthen visibility and control across healthcare operations.", body: "Bring billing, procurement, vendor, and operational data together to identify billing anomalies, vendor compliance issues, unusual activity, and regulatory exceptions while streamlining reporting and investigations." },
+  { icon: Factory, title: "Manufacturing", lead: "Connect operational data to stronger supply chain intelligence.", body: "Monitor procurement, vendors, transactions, and supply chain activity in one place. Identify anomalies, verify vendors, detect procurement risks, and gain greater visibility into operational controls." },
+  { icon: Building2, title: "Government", lead: "Bring greater transparency and control to public sector operations.", body: "Centralise operational, procurement, grant, and financial information to improve reporting and visibility while identifying potential fraud, procurement irregularities, compliance gaps, and unusual activity." },
 ];
 
 const OUTCOMES = [
+  "Centralise business information across your key operations and systems",
+  "Gain real-time visibility into daily business activities",
+  "Streamline reporting and reduce manual reporting processes",
   "Detect anomalies before they escalate",
   "Reduce false positives with grounded AI",
   "Automate regulatory reporting",
   "Prioritise investigations by risk",
   "Screen vendors and counterparties in real time",
   "Build an auditable evidence trail",
+  "Identify control gaps and operational exceptions",
+  "Turn business data into clear, actionable intelligence",
 ];
 
 export default function SolutionsSection() {
@@ -46,8 +51,7 @@ export default function SolutionsSection() {
             transition={{ duration: 0.5, delay: 0.1 }}
             className="mt-4 text-sm text-slate-400"
           >
-            RAVIQEN adapts to your industry's risk landscape — from hospitality POS fraud to
-            financial services AML compliance and beyond.
+            RAVIQEN adapts to your industry's unique operational and risk landscape — bringing critical business information together to improve visibility, streamline reporting, strengthen controls, and identify risk earlier. From hospitality POS and procurement monitoring to financial services AML compliance, retail vendor risk, healthcare billing, manufacturing supply chains, and government procurement, RAVIQEN turns complex business data into clear, actionable intelligence.
           </motion.p>
         </div>
 
@@ -68,7 +72,8 @@ export default function SolutionsSection() {
                   <Icon className="w-5 h-5 text-[#52d9a6]" />
                 </div>
                 <h3 className="text-base font-semibold text-white mb-2">{ind.title}</h3>
-                <p className="text-sm text-slate-400 leading-relaxed">{ind.desc}</p>
+                <p className="text-sm text-slate-200 italic leading-relaxed">{ind.lead}</p>
+                <p className="mt-2 text-sm text-slate-400 leading-relaxed">{ind.body}</p>
               </motion.div>
             );
           })}
@@ -96,7 +101,7 @@ export default function SolutionsSection() {
 
         {/* CTA */}
         <div className="mt-12 text-center">
-          <h3 className="text-xl font-bold text-white">Find your industry's risk</h3>
+          <h3 className="text-xl font-bold text-white">Find Your Industry's Risk</h3>
           <p className="mt-2 text-sm text-slate-400">
             See how RAVIQEN adapts to your specific risk landscape.
           </p>

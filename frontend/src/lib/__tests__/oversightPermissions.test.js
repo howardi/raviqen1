@@ -9,6 +9,9 @@ test("department staff cannot open manager oversight routes", () => {
   assert.equal(canAccessRoute("/oversight/investigation", staff), false);
   assert.equal(canAccessRoute("/oversight/submit", staff), true);
   assert.equal(canAccessRoute("/dashboard", staff), false);
+  assert.equal(canAccessRoute("/oversight/hr", staff), false);
+  assert.equal(canAccessRoute("/oversight/procurement", staff), false);
+  assert.equal(canAccessRoute("/ai-chatbox", staff), false);
 });
 
 test("pending users only see awaiting assignment", () => {
@@ -23,6 +26,7 @@ test("tenant GM can open oversight inbox and is blocked without tenant on staff 
   assert.equal(normalizeUserRole(gm), "org_admin");
   assert.equal(canAccessRoute("/oversight", gm), true);
   assert.equal(canAccessRoute("/oversight/hr", gm), true);
+  assert.equal(getRoleHomeRoute(gm), "/oversight");
 });
 
 test("oversight feature flag hides the module", () => {

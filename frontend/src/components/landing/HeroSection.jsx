@@ -1,14 +1,14 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ShieldCheck, ArrowRight, Eye, Clock, Cpu, Layers } from "lucide-react";
+import { ArrowRight, Eye, Clock, Cpu, Layers, ShieldCheck } from "lucide-react";
 import BookDemoButton from "@/components/landing/BookDemoButton";
 
 const STATS = [
-  { value: "24/7", label: "Autonomous Monitoring", icon: Clock },
-  { value: "100%", label: "Data Integrity", icon: ShieldCheck },
-  { value: "AI", label: "Risk Detection", icon: Cpu },
-  { value: "1", label: "Intelligent Layer", icon: Layers },
+  { value: "24/7", label: "Autonomous Monitoring", detail: "Continuously monitors business activity and operational data.", icon: Clock },
+  { value: "360°", label: "Business Visibility", detail: "Centralises critical information for a clearer view of your business.", icon: Eye },
+  { value: "AI", label: "Risk & Anomaly Detection", detail: "Identifies unusual activity, control gaps, and emerging risks.", icon: Cpu },
+  { value: "1", label: "Intelligent Layer", detail: "One intelligent layer connecting your business information, reporting, operations, and risk intelligence.", icon: Layers },
 ];
 
 export default function HeroSection() {
@@ -57,9 +57,16 @@ export default function HeroSection() {
           className="mt-5 text-sm md:text-base text-slate-300 leading-relaxed max-w-xl"
         >
           <span className="text-white font-medium">AI-powered intelligence for smarter business control.</span>{" "}
-          RAVIQEN continuously analyses your business data to uncover unusual transactions, control gaps,
-          procurement irregularities, financial anomalies and other risks, so your team knows what needs
-          attention before it becomes a problem.
+          RAVIQEN brings your business information and daily operations into one intelligent platform, helping you centralise information, streamline reporting, and gain greater visibility into your business activities.
+        </motion.p>
+
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.25 }}
+          className="mt-3 text-sm md:text-base text-slate-300 leading-relaxed max-w-xl"
+        >
+          RAVIQEN continuously analyses your business data to identify unusual transactions, control gaps, procurement irregularities, financial anomalies, operational exceptions, and other potential risks — giving your team the insight they need to know what requires attention, where it matters, and when to act.
         </motion.p>
 
         <motion.p
@@ -68,7 +75,7 @@ export default function HeroSection() {
           transition={{ duration: 0.6, delay: 0.3 }}
           className="mt-3 text-sm text-emerald-300 font-medium italic max-w-xl"
         >
-          Your systems collect the data. RAVIQEN finds the risk.
+          Turn business data into clearer visibility, stronger controls, and smarter decisions.
         </motion.p>
 
         {/* CTA Buttons */}
@@ -93,7 +100,7 @@ export default function HeroSection() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.5 }}
-          className="mt-7 grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3 max-w-xl"
+          className="mt-7 grid grid-cols-2 gap-2.5 sm:gap-3 max-w-xl"
         >
           {STATS.map((stat) => {
             const Icon = stat.icon;
@@ -102,7 +109,8 @@ export default function HeroSection() {
                 <div className="absolute top-0 right-0 w-16 h-16 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none" />
                 <Icon className="w-4 h-4 text-emerald-400 mb-2 relative" />
                 <p className="text-xl font-bold text-white relative">{stat.value}</p>
-                <p className="text-[10px] text-slate-500 uppercase tracking-wide relative">{stat.label}</p>
+                <p className="text-[10px] text-slate-400 uppercase tracking-wide font-medium relative">{stat.label}</p>
+                <p className="text-[11px] text-slate-500 leading-snug mt-1.5 relative">{stat.detail}</p>
               </div>
             );
           })}

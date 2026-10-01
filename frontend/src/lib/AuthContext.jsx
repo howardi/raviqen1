@@ -2,6 +2,7 @@ import React, { createContext, useState, useContext, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { appParams } from '@/lib/app-params';
 import { createAxiosClient } from '@base44/sdk/dist/utils/axios-client';
+import { clearCommandCenterSession, readCommandCenterSession } from '@/lib/commandCenterSession';
 
 const AuthContext = createContext();
 
@@ -17,6 +18,18 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     checkAppState();
   }, []);
+
+  const applyCommandCenterSession = () => {
+    const demo = readCommandCenterSession();
+    if (!demo) return false;
+    setUser(demo);
+    setIsAuthenticated(true);
+    setIsLoadingAuth(false);
+    setAuthChecked(true);
+    setAuthError(null);
+    setIsLoadingPublicSettings(false);
+    return true;
+  };
 
   const checkAppState = async () => {
     try {
@@ -41,7 +54,7 @@ export const AuthProvider = ({ children }) => {
         // If we got the app public settings successfully, check if user is authenticated
         if (appParams.token) {
           await checkUserAuth();
-        } else {
+        } else if (!applyCommandCenterSession()) {
           setIsLoadingAuth(false);
           setIsAuthenticated(false);
           setAuthChecked(true);
@@ -49,7 +62,8 @@ export const AuthProvider = ({ children }) => {
         setIsLoadingPublicSettings(false);
       } catch (appError) {
         console.error('App state check failed:', appError);
-        
+        if (applyCommandCenterSession()) return;
+
         // Handle app-level errors
         if (appError.status === 403 && appError.data?.extra_data?.reason) {
           const reason = appError.data.extra_data.reason;
@@ -130,6 +144,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = (shouldRedirect = true) => {
+    clearCommandCenterSession();
     setUser(null);
     setIsAuthenticated(false);
     

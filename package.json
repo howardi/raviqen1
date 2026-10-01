@@ -8,7 +8,7 @@
     "dev:backend": "npm run dev --prefix backend",
     "build": "vite build --config frontend/vite.config.js",
     "start": "npm run start --prefix backend",
-    "test": "node --test frontend/src/lib/__tests__/alertAmountInvariant.test.js frontend/src/lib/__tests__/aiBriefingSafety.test.js frontend/src/lib/__tests__/riskSeverity.test.js frontend/src/lib/__tests__/narrativeAmounts.test.js frontend/src/lib/__tests__/riskFactors.test.js frontend/src/lib/__tests__/scanConsistency.test.js frontend/src/lib/__tests__/oversightPermissions.test.js frontend/src/lib/__tests__/reportFraud.test.js",
+    "test": "node --test frontend/src/lib/__tests__/alertAmountInvariant.test.js frontend/src/lib/__tests__/aiBriefingSafety.test.js frontend/src/lib/__tests__/riskSeverity.test.js frontend/src/lib/__tests__/narrativeAmounts.test.js frontend/src/lib/__tests__/riskFactors.test.js frontend/src/lib/__tests__/scanConsistency.test.js frontend/src/lib/__tests__/oversightPermissions.test.js frontend/src/lib/__tests__/reportFraud.test.js frontend/src/lib/__tests__/llmGrounding.test.js frontend/src/lib/__tests__/riskMandate.test.js",
     "lint": "eslint frontend --quiet",
     "lint:fix": "eslint frontend --fix",
     "typecheck": "tsc -p frontend/jsconfig.json",

@@ -16,6 +16,21 @@ test("storekeeper price spike is a critical fraud finding", () => {
   assert.ok(result.findings.some((item) => item.code === "SUPPLIER"));
 });
 
+test("duplicate lines, missing receipts, and a price climb are flagged from the records", () => {
+  const result = analyzeReportFraud({
+    report: { department: "procurement", metrics: {} },
+    history: [{ department: "procurement", purchases: [{ item: "Rice", supplier: "A", unit_price: 1000, quantity: 1 }] }],
+    purchases: [
+      { item: "Rice", supplier: "A", unit_price: 1800, quantity: 1 },
+      { item: "Rice", supplier: "A", unit_price: 1800, quantity: 1 },
+    ],
+  });
+  assert.ok(result.findings.some((item) => item.code === "DUPLICATE_LINE"));
+  assert.ok(result.findings.some((item) => item.code === "MISSING_RECEIPT"));
+  assert.ok(result.findings.some((item) => item.code === "PRICE_CLIMB"));
+  assert.match(result.findings.find((item) => item.code === "PRICE_CLIMB").evidence, /1800 versus prior 1000/);
+});
+
 test("restaurant wastage above sales is critical", () => {
   const result = analyzeReportFraud({
     report: { department: "restaurant", metrics: { sales: 100, covers: 20, wastage: 250 } },

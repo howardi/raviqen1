@@ -5,6 +5,9 @@
 
 import { base44 } from "@/api/base44Client";
 import { formatCurrency } from "@/lib/currencyUtils";
+import { listingContainsPrice } from "@/lib/llmGrounding";
+
+export { listingContainsPrice };
 
 // Comparisons use a fetched rate only: never manufacture a parallel-market rate.
 const ACCEPTABLE_BUFFER_PCT = 25;   // RULE-PG-01 ceiling (+25%)
@@ -73,47 +76,21 @@ export function isProcurementRecord(record) {
   return false;
 }
 
-// ─── Phase 2: Live market indexing (LLM + web search) ───────────────────────
-const MARKET_PRICE_SCHEMA = {
-  type: "object",
-  properties: {
-    items: {
-      type: "array",
-      items: {
-        type: "object",
-        properties: {
-          item_description: { type: "string" },
-          nigerian_market_avg_ngn: { type: "number", description: "Current average market price in Nigerian Naira" },
-          market_basis: { type: "string", description: "What comparable specification, unit and location this quoted price covers" },
-          market_source_url: { type: "string", description: "Direct URL to the publicly visible listed price used (empty if none)" },
-          confidence: { type: "string", enum: ["low", "medium", "high"] },
-        },
-        required: ["item_description"],
-      },
-    },
-    overall_market_note: { type: "string" },
-  },
-  required: ["items"],
-};
-
+// Live prices come from lookupProcurementMarket, which keeps a quote only after
+// the cited page is fetched and the same number is printed on that page.
 async function fetchMarketPrices(items, record) {
-  const prompt = `You are a Nigerian procurement pricing intelligence engine. For each product listed below, determine the CURRENT average market price in Nigeria (in Naira, NGN) as of today. Use live web search across Nigerian B2B marketplaces, e-commerce platforms (Jumia, Konga, Jiji, Kara), manufacturer/distributor price lists, and industry pricing indices.
-
-Return exactly one entry per item, IN THE SAME ORDER, with a current Nigerian market unit price and a direct public URL showing the price. Do not invent prices, URLs, product specifications, or sources. If no comparable public price exists, omit the numeric market price and leave market_source_url empty. Explain product specification and unit comparability in market_basis. A price difference is a review signal, not proof of fraud.
-
-ITEMS:
-${items.map((it, i) => `${i + 1}. ${it.item_description} (qty ${it.quantity}, quoted unit price ${it.unit_price} ${it.currency || "currency unknown"})`).join("\n")}
-
-VENDOR: ${record.vendor || "Unknown"}
-LOCATION: ${record.location || "Nigeria"}`;
-
-  const result = await base44.integrations.Core.InvokeLLM({
-    prompt,
-    add_context_from_internet: true,
-    model: "gemini_3_flash",
-    response_json_schema: MARKET_PRICE_SCHEMA,
+  const result = await base44.functions.invoke("lookupProcurementMarket", {
+    items: items.map((it) => ({
+      item_description: it.item_description,
+      unit_price: it.unit_price,
+      currency: it.currency || record.currency || "",
+      quantity: it.quantity,
+    })),
+    vendor: record.vendor || "",
+    location: record.location || "Nigeria",
   });
-  return result?.items || [];
+  const rows = result?.data?.items || result?.items || [];
+  return rows.filter((row) => row?.verified === true);
 }
 
 // ─── Phase 3: Variance calculation & rule classification ────────────────────
@@ -186,7 +163,7 @@ export async function analyzeProcurementVariance(record, { skipMarket = false } 
     const marketAvg = Number(market.nigerian_market_avg_ngn);
     const invoice = it.invoice_unit_price_ngn;
     const sameItem = String(market.item_description || "").trim().toLowerCase() === it.item_description.trim().toLowerCase();
-    const comparable = !!sourceUrl && sameItem && Number.isFinite(marketAvg) && marketAvg > 0 && invoice != null;
+    const comparable = market.verified === true && !!sourceUrl && sameItem && Number.isFinite(marketAvg) && marketAvg > 0 && invoice != null;
     const variancePct = comparable ? ((invoice - marketAvg) / marketAvg) * 100 : null;
     const rule = comparable ? classifyVariance(variancePct) : null;
     const mathMismatch = Number.isFinite(it.line_total) && Math.abs(it.line_total - it.unit_price * it.quantity) > Math.max(1, it.line_total * 0.01);
@@ -242,7 +219,11 @@ export async function analyzeProcurementVariance(record, { skipMarket = false } 
     })),
     overall_procurement_risk: overall.level,
     recommended_action: overall.action,
-    market_note: skipMarket ? "Batch scanning checks invoice arithmetic; market listing comparisons require a separate sourced review." : marketError ? `Market lookup failed: ${marketError}` : "Market listings are indicative; check the cited specification and date before treating a price gap as a fraud indicator.",
+    market_note: skipMarket
+      ? "Invoice arithmetic is checked from the source lines. A live market comparison runs only after the cited page is fetched and the price is found on that page."
+      : marketError
+        ? `Live market lookup failed: ${marketError}. No price was estimated.`
+        : "A variance is shown only when the cited page was fetched and the same NGN price was printed on it.",
     _analysis: analysis,
   };
 }

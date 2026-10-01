@@ -60,14 +60,13 @@ export default function Landing() {
         <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
           <div>
             <h2 className="text-2xl lg:text-3xl font-bold text-white">
-              One intelligent layer. Total visibility. Smarter decisions.
+              One intelligent platform. Clearer visibility. Smarter decisions.
             </h2>
             <p className="mt-4 text-sm text-slate-400 leading-relaxed max-w-md">
-              RAVIQEN works above the systems you already use, turning thousands of daily
-              transactions and business activities into clear, prioritised risk insights.
+              RAVIQEN brings your business information and daily operations into one intelligent platform, helping you centralise information, streamline reporting, and gain greater visibility into your business activities.
             </p>
             <p className="mt-3 text-sm font-bold text-emerald-400 tracking-wide">
-              Detect. Prioritise. Act.
+              Turn business data into clearer visibility, stronger controls, and smarter decisions.
             </p>
           </div>
           <div className="relative">
@@ -81,7 +80,7 @@ export default function Landing() {
               />
             </div>
             <p className="text-center text-xs text-slate-500 mt-4 px-4">
-              The intelligent layer above your systems — detecting risk, surfacing anomalies, prioritising action.
+              RAVIQEN turns complex business data into clear, actionable intelligence.
             </p>
           </div>
         </div>
@@ -94,7 +93,7 @@ export default function Landing() {
       <footer className="border-t border-slate-800/60 px-4 sm:px-8 py-4">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-2 text-xs text-slate-600">
           <span>© 2026 RAVIQEN — AI Risk & Compliance Intelligence</span>
-          <span>Build trust first • Investigate with evidence • Remediate with confidence</span>
+          <span>Turn business data into clearer visibility, stronger controls, and smarter decisions.</span>
         </div>
       </footer>
     </div>
