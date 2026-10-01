@@ -4,11 +4,20 @@ import { fetchFxRates, convertAmount } from "@/lib/currencyUtils";
 /**
  * Fetches all relevant entity data for conversational analytics context.
  */
+async function safeList(name, limit) {
+  try {
+    const rows = await base44.entities[name].list("-created_date", limit);
+    return { rows: Array.isArray(rows) ? rows : [], loaded: true };
+  } catch {
+    return { rows: [], loaded: false };
+  }
+}
+
 async function fetchPlatformData() {
   const [transactions, alerts, investigations] = await Promise.all([
-    base44.entities.Transaction.list("-created_date", 200),
-    base44.entities.Alert.list("-created_date", 100),
-    base44.entities.Investigation.list("-created_date", 50),
+    safeList("Transaction", 200),
+    safeList("Alert", 100),
+    safeList("Investigation", 50),
   ]);
   return { transactions, alerts, investigations };
 }
@@ -107,7 +116,20 @@ export async function processConversationalQuery(query) {
     return { isDataQuery: false, intent };
   }
 
-  const { transactions, alerts, investigations } = await fetchPlatformData();
+  const loaded = await fetchPlatformData();
+  if (!loaded.transactions.loaded && !loaded.alerts.loaded && !loaded.investigations.loaded) {
+    return {
+      isDataQuery: true,
+      intent,
+      summary: "Live records are not available in this preview, so I cannot count transactions, alerts, or investigations.",
+      narrative: "Live records are not available in this preview, so I cannot count transactions, alerts, or investigations. I can still explain investigations, alerts, ingestion, and procurement variance.",
+      data: [],
+      entityLabel: "records",
+    };
+  }
+  const transactions = loaded.transactions.rows;
+  const alerts = loaded.alerts.rows;
+  const investigations = loaded.investigations.rows;
   const rates = await fetchFxRates();
 
   let data, summary, entityLabel;

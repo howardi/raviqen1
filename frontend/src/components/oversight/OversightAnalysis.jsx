@@ -1,9 +1,11 @@
 import React, { useState } from "react";
-import { base44 } from "@/api/base44Client";
+import { useAuth } from "@/lib/AuthContext";
 import { BRAND_PROMISE } from "@/lib/oversight";
 import { mandateFromFinding } from "@/lib/riskMandate";
+import { analyzeOversightLive } from "@/lib/oversightAnalysis";
 
 export default function OversightAnalysis({ department, label }) {
+  const { user } = useAuth();
   const [insights, setInsights] = useState([]);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
@@ -12,10 +14,11 @@ export default function OversightAnalysis({ department, label }) {
     setBusy(true);
     setError("");
     try {
-      const res = await base44.functions.invoke("analyzeOversightReports", department ? { department } : {});
+      const res = await analyzeOversightLive({ department, tenantId: user?.tenant_id });
       setInsights(res.findings || []);
+      setError(res.error || res.note || "");
     } catch (e) {
-      setError(e.response?.data?.error || e.message);
+      setError(e.message || "Analysis failed.");
     } finally {
       setBusy(false);
     }
@@ -32,7 +35,8 @@ export default function OversightAnalysis({ department, label }) {
           {busy ? "Analyzing…" : "Run AI analysis"}
         </button>
       </div>
-      {error && <p role="alert" className="mt-3 text-sm text-red-700">{error}</p>}
+      {error && insights.length === 0 && <p role="alert" className="mt-3 text-sm text-red-700">{error}</p>}
+      {error && insights.length > 0 && <p className="mt-3 text-sm text-slate-600">{error}</p>}
       {insights.length > 0 && (
         <div className="mt-5 space-y-2">
           <h3 className="text-sm font-semibold">Source-linked findings</h3>

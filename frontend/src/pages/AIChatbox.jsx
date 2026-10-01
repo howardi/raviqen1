@@ -1,16 +1,18 @@
 import React, { useState, useRef, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
 import { Send, Bot, User, Loader2, Sparkles, Database, BarChart3 } from "lucide-react";
 import { processConversationalQuery } from "@/lib/conversationalAnalytics";
+import { replyFromPlatform } from "@/lib/chatReply";
+import { invokeLiveLLM } from "@/lib/liveAI";
 import MarkdownContent from "@/components/MarkdownContent";
 
-const SYSTEM_CONTEXT = `You are RAVIQEN AI Assistant, a helpful guide for the RAVIQEN risk and compliance monitoring platform. RAVIQEN helps organizations monitor financial transactions, detect anomalies, manage investigations, and ensure compliance. You can help users understand:
+const SYSTEM_CONTEXT = `You are RAVIQEN AI Assistant. Answer questions about this app and general questions on any other topic. RAVIQEN helps organizations monitor financial transactions, detect anomalies, manage investigations, and ensure compliance. You can explain:
 - Investigations and the 5-step wizard (Evidence, AI Summary, Cross-Reference, AI Analyst, Decision)
 - Alerts and risk scoring
 - Data ingestion and supported file formats (CSV, Excel, PDF, Word, images)
 - Compliance analysis and financial impact estimation
 - POS system connectors (QuickBooks, eZee Burrp) with cloud sync or manual upload
-Be concise, professional, friendly, and warm in tone. Do NOT use markdown formatting — no bold markers (**), no headers, no markdown bullets. Write in clean, readable plain text. Use simple dashes (-) for lists if needed. If you don't know something specific about the user's data, explain how to find it in the platform.`;
+- The Super Admin Command Center and department reporting
+Be concise, professional, friendly, and warm. Do NOT use markdown formatting — no bold markers (**), no headers, no markdown bullets. Write in clean, readable plain text. Use simple dashes (-) for lists if needed. For the user's own business records, use only figures that were supplied to you. Do not invent their transactions or amounts. For general knowledge, answer directly.`;
 
 const stripBold = (text) => (text || "").replace(/\*\*/g, "");
 
@@ -23,7 +25,7 @@ const SUGGESTED_QUERIES = [
 
 export default function AIChatbox() {
   const [messages, setMessages] = useState([
-    { role: "assistant", content: "Hello! I'm the RAVIQEN AI Assistant. I can help you understand investigations, alerts, risk scoring, data ingestion, and platform features. What can I help you with today?" },
+    { role: "assistant", content: "Hello! I'm the RAVIQEN AI Assistant. Ask me about this app, or ask a general question." },
   ]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -63,14 +65,21 @@ export default function AIChatbox() {
         const conversation = newMessages
           .map((m) => `${m.role === "user" ? "User" : "Assistant"}: ${m.content}`)
           .join("\n");
-        const res = await base44.integrations.Core.InvokeLLM({
-          prompt: `${SYSTEM_CONTEXT}\n\nConversation so far:\n${conversation}\n\nAssistant:`,
-        });
-        answer = stripBold(typeof res === "string" ? res : (res?.answer || res?.response || "I'm here to help. Could you rephrase your question?"));
+        try {
+          const res = await invokeLiveLLM({
+            prompt: `${SYSTEM_CONTEXT}\n\nConversation so far:\n${conversation}\n\nAssistant:`,
+          });
+          answer = stripBold(typeof res === "string" ? res : (res?.answer || res?.response || replyFromPlatform(userMsg)));
+        } catch (error) {
+          const message = String(error?.message || "The model did not respond.");
+          answer = /credit|billing/i.test(message)
+            ? "Your OpenAI account has no credits remaining. Add OpenAI credits, or add a Cursor API key in the server settings, then ask again."
+            : message;
+        }
         setMessages((prev) => [...prev, { role: "assistant", content: answer }]);
       }
-    } catch (e) {
-      setMessages((prev) => [...prev, { role: "assistant", content: "I'm having trouble responding right now. Please try again in a moment." }]);
+    } catch (error) {
+      setMessages((prev) => [...prev, { role: "assistant", content: String(error?.message || "The model did not respond.") }]);
     } finally {
       setLoading(false);
     }
@@ -101,7 +110,7 @@ export default function AIChatbox() {
         {/* Data query indicator */}
         <div className="mb-4 flex items-center gap-2 px-3 py-2 rounded-lg bg-violet-50 border border-violet-100">
           <Database className="w-4 h-4 text-violet-600" />
-          <span className="text-xs text-violet-700">Now connected to live data — ask about transactions, alerts, or investigations in plain language</span>
+          <span className="text-xs text-violet-700">Answers use loaded records. Counts and amounts appear only when those records are available.</span>
         </div>
         {/* Suggested queries */}
         {messages.length <= 1 && (

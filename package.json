@@ -8,7 +8,7 @@
     "dev:backend": "npm run dev --prefix backend",
     "build": "vite build --config frontend/vite.config.js",
     "start": "npm run start --prefix backend",
-    "test": "node --test frontend/src/lib/__tests__/alertAmountInvariant.test.js frontend/src/lib/__tests__/aiBriefingSafety.test.js frontend/src/lib/__tests__/riskSeverity.test.js frontend/src/lib/__tests__/narrativeAmounts.test.js frontend/src/lib/__tests__/riskFactors.test.js frontend/src/lib/__tests__/scanConsistency.test.js frontend/src/lib/__tests__/oversightPermissions.test.js frontend/src/lib/__tests__/reportFraud.test.js frontend/src/lib/__tests__/llmGrounding.test.js frontend/src/lib/__tests__/riskMandate.test.js",
+    "test": "node --test frontend/src/lib/__tests__/alertAmountInvariant.test.js frontend/src/lib/__tests__/aiBriefingSafety.test.js frontend/src/lib/__tests__/riskSeverity.test.js frontend/src/lib/__tests__/narrativeAmounts.test.js frontend/src/lib/__tests__/riskFactors.test.js frontend/src/lib/__tests__/scanConsistency.test.js frontend/src/lib/__tests__/oversightPermissions.test.js frontend/src/lib/__tests__/reportFraud.test.js frontend/src/lib/__tests__/llmGrounding.test.js frontend/src/lib/__tests__/riskMandate.test.js frontend/src/lib/__tests__/oversightAnalysis.test.js frontend/src/lib/__tests__/chatReply.test.js",
     "lint": "eslint frontend --quiet",
     "lint:fix": "eslint frontend --fix",
     "typecheck": "tsc -p frontend/jsconfig.json",
@@ -17,6 +17,7 @@
   "dependencies": {
     "@base44/sdk": "^0.8.52",
     "@base44/vite-plugin": "^1.0.44",
+    "@cursor/sdk": "^1.0.35",
     "@hello-pangea/dnd": "^17.0.0",
     "@hookform/resolvers": "^4.1.2",
     "@radix-ui/react-accordion": "^1.2.3",

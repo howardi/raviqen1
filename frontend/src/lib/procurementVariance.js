@@ -3,9 +3,9 @@
 // Phase 2: Live Nigerian market indexing via web search + variance calculation
 // Phase 3: RULE-PG-01 / PG-02 / PG-03 discrepancy flagging
 
-import { base44 } from "@/api/base44Client";
 import { formatCurrency } from "@/lib/currencyUtils";
 import { listingContainsPrice } from "@/lib/llmGrounding";
+import { lookupLiveMarket } from "@/lib/liveAI";
 
 export { listingContainsPrice };
 
@@ -76,10 +76,10 @@ export function isProcurementRecord(record) {
   return false;
 }
 
-// Live prices come from lookupProcurementMarket, which keeps a quote only after
+// Live prices come from /api/market, which keeps a quote only after
 // the cited page is fetched and the same number is printed on that page.
 async function fetchMarketPrices(items, record) {
-  const result = await base44.functions.invoke("lookupProcurementMarket", {
+  return lookupLiveMarket({
     items: items.map((it) => ({
       item_description: it.item_description,
       unit_price: it.unit_price,
@@ -89,8 +89,6 @@ async function fetchMarketPrices(items, record) {
     vendor: record.vendor || "",
     location: record.location || "Nigeria",
   });
-  const rows = result?.data?.items || result?.items || [];
-  return rows.filter((row) => row?.verified === true);
 }
 
 // ─── Phase 3: Variance calculation & rule classification ────────────────────
